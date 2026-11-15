@@ -1,0 +1,7 @@
+{
+  "name": "flydesk",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular-standalone"
+}
