@@ -1,3 +1,52 @@
 <ion-app>
-  <ion-router-outlet></ion-router-outlet>
+  <!-- Menu lateral (se abre con el boton de hamburguesa de cada pagina) -->
+  <ion-menu contentId="contenido-principal" type="overlay" (ionWillOpen)="alAbrirMenu()">
+    <ion-header>
+      <ion-toolbar color="primary">
+        <ion-title>FlyDesk</ion-title>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content>
+      <!-- Datos del usuario -->
+      <div class="usuario-menu" *ngIf="usuario">
+        <ion-avatar class="avatar-iniciales">
+          <span>{{ obtenerIniciales() }}</span>
+        </ion-avatar>
+        <div>
+          <h3>{{ usuario.nombre }}</h3>
+          <ion-note>{{ usuario.email }}</ion-note>
+        </div>
+      </div>
+
+      <ion-list lines="none">
+        <ion-list-header>Navegación</ion-list-header>
+
+        <ion-menu-toggle [autoHide]="false" *ngFor="let opcion of opciones">
+          <ion-item [routerLink]="opcion.url" routerLinkActive="opcion-activa" [detail]="false" button>
+            <ion-icon slot="start" [name]="opcion.icono"></ion-icon>
+            <ion-label>{{ opcion.titulo }}</ion-label>
+          </ion-item>
+        </ion-menu-toggle>
+
+        <ion-list-header>Otros</ion-list-header>
+        <ion-menu-toggle [autoHide]="false">
+          <ion-item button [detail]="false" (click)="mostrarAcercaDe()">
+            <ion-icon slot="start" name="information-circle-outline"></ion-icon>
+            <ion-label>Acerca de</ion-label>
+          </ion-item>
+          <ion-item button [detail]="false" (click)="cerrarSesion()">
+            <ion-icon slot="start" name="log-out-outline" color="danger"></ion-icon>
+            <ion-label color="danger">Cerrar sesión</ion-label>
+          </ion-item>
+        </ion-menu-toggle>
+      </ion-list>
+    </ion-content>
+
+    <ion-footer class="ion-padding ion-text-center">
+      <ion-note>Hecho con Ionic + Angular + Capacitor</ion-note>
+    </ion-footer>
+  </ion-menu>
+
+  <ion-router-outlet id="contenido-principal"></ion-router-outlet>
 </ion-app>

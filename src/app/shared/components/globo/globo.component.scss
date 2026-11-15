@@ -1,0 +1,17 @@
+:host {
+  display: block;
+}
+
+.contenedor-globo {
+  width: 100%;
+  overflow: hidden;
+}
+
+// El avion lo crea globe.gl fuera de Angular, por eso usamos ::ng-deep
+::ng-deep .avion-globo {
+  font-size: 26px;
+  color: #ffffff;
+  text-shadow: 0 0 8px rgba(245, 159, 0, 0.9);
+  pointer-events: none;
+  transition: transform 0.5s;
+}

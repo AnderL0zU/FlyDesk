@@ -1,0 +1,35 @@
+<ion-card button class="tarjeta" (click)="alTocar()">
+  <ion-card-content>
+    <ion-grid class="ion-no-padding">
+      <ion-row class="ion-align-items-center">
+        <!-- Origen -->
+        <ion-col size="4">
+          <div class="codigo-iata">{{ vuelo.origen.iata }}</div>
+          <div class="texto-pequeno">{{ vuelo.origen.ciudad }}</div>
+        </ion-col>
+
+        <!-- Linea con el avion -->
+        <ion-col size="4" class="ion-text-center">
+          <div class="linea-ruta">
+            <ion-icon name="airplane"></ion-icon>
+          </div>
+          <div class="texto-pequeno">{{ vuelo.distanciaKm | number: '1.0-0' }} km</div>
+        </ion-col>
+
+        <!-- Destino -->
+        <ion-col size="4" class="ion-text-end">
+          <div class="codigo-iata">{{ vuelo.destino.iata }}</div>
+          <div class="texto-pequeno">{{ vuelo.destino.ciudad }}</div>
+        </ion-col>
+      </ion-row>
+
+      <ion-row class="ion-justify-content-between ion-align-items-center fila-inferior">
+        <span class="texto-pequeno">{{ vuelo.codigo }} · {{ vuelo.destino.pais }}</span>
+        <ion-badge [color]="obtenerColorDuracion()">
+          <ion-icon name="time-outline"></ion-icon>
+          {{ vuelo.duracionMin | duracion }}
+        </ion-badge>
+      </ion-row>
+    </ion-grid>
+  </ion-card-content>
+</ion-card>

@@ -1,0 +1,160 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Mi perfil</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <!-- Cabecera con avatar -->
+  <div class="cabecera" *ngIf="usuario">
+    <ion-avatar class="avatar">
+      <span>{{ obtenerIniciales() }}</span>
+    </ion-avatar>
+    <h2>
+      {{ usuario.nombre }}
+      <ion-button fill="clear" size="small" (click)="editarNombre()">
+        <ion-icon slot="icon-only" name="create-outline"></ion-icon>
+      </ion-button>
+    </h2>
+    <ion-text color="medium">
+      <p>{{ usuario.email }}</p>
+      <small>Piloto desde {{ usuario.fechaRegistro | date: 'MMMM y' }}</small>
+    </ion-text>
+  </div>
+
+  <!-- Aeropuerto base + geolocalizacion -->
+  <ion-list inset="true">
+    <ion-list-header>
+      <ion-label>Aeropuerto base</ion-label>
+    </ion-list-header>
+    <ion-item button (click)="elegirAeropuertoBase()">
+      <ion-icon slot="start" name="home-outline" color="primary"></ion-icon>
+      <ion-label>
+        <h3>{{ aeropuertoBase ? aeropuertoBase.ciudad + ' (' + aeropuertoBase.iata + ')' : 'Sin elegir' }}</h3>
+        <p>{{ aeropuertoBase ? aeropuertoBase.nombre : 'Toca para escoger tu aeropuerto' }}</p>
+      </ion-label>
+    </ion-item>
+    <ion-item button [detail]="false" (click)="detectarAeropuerto()" [disabled]="buscandoUbicacion">
+      <ion-spinner *ngIf="buscandoUbicacion" slot="start" name="crescent"></ion-spinner>
+      <ion-icon *ngIf="!buscandoUbicacion" slot="start" name="locate-outline" color="secondary"></ion-icon>
+      <ion-label>Detectar con mi ubicación (GPS)</ion-label>
+    </ion-item>
+  </ion-list>
+
+  <!-- Ajustes con ion-toggle y ion-select -->
+  <ion-list inset="true">
+    <ion-list-header>
+      <ion-label>Ajustes de vuelo</ion-label>
+    </ion-list-header>
+
+    <ion-item>
+      <ion-icon slot="start" name="lock-closed-outline" color="warning"></ion-icon>
+      <ion-toggle [(ngModel)]="ajustes.modoEstricto" (ionChange)="guardarAjustes()">
+        <ion-label>
+          Modo estricto
+          <p>Si sales de la app más de 10 s, tu vuelo se desvía</p>
+        </ion-label>
+      </ion-toggle>
+    </ion-item>
+
+    <ion-item>
+      <ion-icon slot="start" name="notifications-outline" color="primary"></ion-icon>
+      <ion-toggle [(ngModel)]="ajustes.notificaciones" (ionChange)="cambiarNotificaciones()">
+        <ion-label>
+          Notificaciones
+          <p>Aviso cuando tu vuelo aterriza</p>
+        </ion-label>
+      </ion-toggle>
+    </ion-item>
+
+    <ion-item>
+      <ion-icon slot="start" name="phone-portrait-outline" color="tertiary"></ion-icon>
+      <ion-toggle [(ngModel)]="ajustes.vibracion" (ionChange)="cambiarVibracion()">
+        <ion-label>
+          Vibración
+          <p>Al despegar y aterrizar</p>
+        </ion-label>
+      </ion-toggle>
+    </ion-item>
+
+    <ion-item>
+      <ion-icon slot="start" name="flag-outline" color="success"></ion-icon>
+      <ion-select
+        label="Meta diaria"
+        [(ngModel)]="ajustes.metaDiariaMin"
+        (ionChange)="guardarAjustes()"
+        interface="action-sheet"
+        [interfaceOptions]="{ header: '¿Cuántos minutos quieres enfocarte al día?' }"
+      >
+        <ion-select-option *ngFor="let minutos of opcionesMeta" [value]="minutos">
+          {{ minutos | duracion }}
+        </ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <ion-item button [detail]="false" (click)="probarNotificacion()">
+      <ion-icon slot="start" name="send-outline" color="medium"></ion-icon>
+      <ion-label>Probar notificación</ion-label>
+    </ion-item>
+  </ion-list>
+
+  <!-- Estadisticas -->
+  <ion-list inset="true" *ngIf="estadisticas">
+    <ion-item-divider color="light">
+      <ion-label>Estadísticas</ion-label>
+    </ion-item-divider>
+    <ion-item>
+      <ion-icon slot="start" name="airplane-outline"></ion-icon>
+      <ion-label>Vuelos totales</ion-label>
+      <ion-note slot="end">{{ estadisticas.totalVuelos }}</ion-note>
+    </ion-item>
+    <ion-item>
+      <ion-icon slot="start" name="checkmark-circle-outline" color="success"></ion-icon>
+      <ion-label>Completados</ion-label>
+      <ion-note slot="end">{{ estadisticas.completados }}</ion-note>
+    </ion-item>
+    <ion-item>
+      <ion-icon slot="start" name="close-circle-outline" color="danger"></ion-icon>
+      <ion-label>Desviados</ion-label>
+      <ion-note slot="end">{{ estadisticas.desviados }}</ion-note>
+    </ion-item>
+    <ion-item>
+      <ion-icon slot="start" name="time-outline"></ion-icon>
+      <ion-label>Tiempo de foco</ion-label>
+      <ion-note slot="end">{{ estadisticas.minutosTotales | duracion }}</ion-note>
+    </ion-item>
+    <ion-item>
+      <ion-icon slot="start" name="navigate-outline"></ion-icon>
+      <ion-label>Distancia volada</ion-label>
+      <ion-note slot="end">{{ estadisticas.kmTotales | number: '1.0-0' }} km</ion-note>
+    </ion-item>
+    <ion-item>
+      <ion-icon slot="start" name="trophy-outline" color="warning"></ion-icon>
+      <ion-label>Racha actual</ion-label>
+      <ion-note slot="end">{{ estadisticas.rachaDias }} días</ion-note>
+    </ion-item>
+
+    <ion-item-divider color="light">
+      <ion-label>Países visitados ({{ estadisticas.paisesVisitados.length }})</ion-label>
+    </ion-item-divider>
+    <div class="ion-padding-horizontal ion-padding-bottom">
+      <ion-chip *ngFor="let pais of estadisticas.paisesVisitados" color="primary">
+        <ion-icon name="earth-outline"></ion-icon>
+        <ion-label>{{ pais }}</ion-label>
+      </ion-chip>
+      <ion-text color="medium" *ngIf="estadisticas.paisesVisitados.length === 0">
+        <p>Aún no has aterrizado en ningún país.</p>
+      </ion-text>
+    </div>
+  </ion-list>
+
+  <div class="ion-padding">
+    <ion-button expand="block" color="danger" fill="outline" (click)="cerrarSesion()">
+      <ion-icon slot="start" name="log-out-outline"></ion-icon>
+      Cerrar sesión
+    </ion-button>
+  </div>
+</ion-content>

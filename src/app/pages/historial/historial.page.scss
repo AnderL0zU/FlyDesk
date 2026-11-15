@@ -1,0 +1,46 @@
+.ayuda {
+  display: block;
+  padding: 0 16px 8px;
+}
+
+.mes {
+  text-transform: capitalize;
+  font-weight: 600;
+}
+
+.miniatura {
+  --border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(var(--ion-color-primary-rgb), 0.12);
+
+  span {
+    font-weight: 800;
+    color: var(--ion-color-primary);
+    letter-spacing: 1px;
+  }
+}
+
+ion-badge {
+  margin-top: 4px;
+}
+
+.vacio {
+  padding: 60px 24px;
+  color: var(--ion-color-medium);
+
+  ion-icon {
+    font-size: 64px;
+    opacity: 0.4;
+  }
+}
+
+.titulo-modal {
+  font-weight: 800;
+  margin-top: 4px;
+}
+
+.nota {
+  font-style: italic;
+}

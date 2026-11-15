@@ -1,0 +1,37 @@
+.tarjeta {
+  margin: 8px 12px;
+  position: relative;
+  overflow: hidden;
+}
+
+.codigo-iata {
+  font-size: 1.5rem;
+  color: var(--ion-text-color);
+}
+
+.linea-ruta {
+  position: relative;
+  border-top: 2px dashed var(--ion-color-medium);
+  margin: 10px 4px;
+
+  ion-icon {
+    position: absolute;
+    top: -11px;
+    left: 50%;
+    margin-left: -10px;
+    font-size: 20px;
+    color: var(--ion-color-primary);
+    background: var(--ion-card-background, var(--ion-background-color));
+  }
+}
+
+.fila-inferior {
+  margin-top: 10px;
+}
+
+ion-badge {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 8px;
+}

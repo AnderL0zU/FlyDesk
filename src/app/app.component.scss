@@ -1,0 +1,34 @@
+.usuario-menu {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 20px 16px 8px;
+
+  h3 {
+    margin: 0 0 4px;
+    font-size: 1.05rem;
+  }
+}
+
+.avatar-iniciales {
+  width: 52px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--ion-color-primary);
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 1.2rem;
+}
+
+// Resalta la opcion de la pagina actual
+.opcion-activa {
+  --color: var(--ion-color-primary);
+  --background: rgba(var(--ion-color-primary-rgb), 0.1);
+  font-weight: 600;
+
+  ion-icon {
+    color: var(--ion-color-primary);
+  }
+}

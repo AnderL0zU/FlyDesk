@@ -1,0 +1,157 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Buscar vuelos</ion-title>
+  </ion-toolbar>
+
+  <!-- Segmento: vuelos al azar o elegir la ruta -->
+  <ion-toolbar color="primary">
+    <ion-segment [(ngModel)]="modo" (ionChange)="cambiarModo()">
+      <ion-segment-button value="aleatorio">
+        <ion-icon name="shuffle-outline"></ion-icon>
+        <ion-label>Aleatorios</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="ruta">
+        <ion-icon name="search-outline"></ion-icon>
+        <ion-label>Elegir ruta</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-refresher slot="fixed" (ionRefresh)="refrescar($event)">
+    <ion-refresher-content pullingText="Desliza para ver otros vuelos"></ion-refresher-content>
+  </ion-refresher>
+
+  <!-- Origen y destino -->
+  <div class="ruta">
+    <ion-item button lines="none" class="campo-ruta" (click)="elegirAeropuerto('origen')">
+      <ion-icon slot="start" name="airplane-outline" color="primary"></ion-icon>
+      <ion-label>
+        <p>Origen</p>
+        <h2>{{ origen ? origen.ciudad + ' (' + origen.iata + ')' : 'Cualquier aeropuerto' }}</h2>
+      </ion-label>
+    </ion-item>
+
+    <ng-container *ngIf="modo === 'ruta'">
+      <ion-button fill="clear" size="small" class="boton-intercambiar" (click)="intercambiarRuta()">
+        <ion-icon slot="icon-only" name="swap-vertical-outline"></ion-icon>
+      </ion-button>
+
+      <ion-item button lines="none" class="campo-ruta" (click)="elegirAeropuerto('destino')">
+        <ion-icon slot="start" name="flag-outline" color="secondary"></ion-icon>
+        <ion-label>
+          <p>Destino</p>
+          <h2>{{ destino ? destino.ciudad + ' (' + destino.iata + ')' : 'Cualquier destino' }}</h2>
+        </ion-label>
+      </ion-item>
+    </ng-container>
+  </div>
+
+  <!-- Filtros dentro de un acordeon -->
+  <ion-accordion-group>
+    <ion-accordion value="filtros">
+      <ion-item slot="header" color="light">
+        <ion-icon slot="start" name="funnel-outline"></ion-icon>
+        <ion-label>Filtros</ion-label>
+        <ion-note slot="end">
+          {{ rangoDuracion.lower | duracion }} – {{ rangoDuracion.upper | duracion }}
+        </ion-note>
+      </ion-item>
+
+      <div slot="content" class="ion-padding">
+        <ion-text color="medium"><h6>Duración de tu sesión de foco</h6></ion-text>
+        <ion-range
+          [(ngModel)]="rangoDuracion"
+          [dualKnobs]="true"
+          [min]="15"
+          [max]="720"
+          [step]="15"
+          [pin]="true"
+          [pinFormatter]="formatearPin"
+          [ticks]="false"
+        >
+          <ion-label slot="start">15m</ion-label>
+          <ion-label slot="end">12h</ion-label>
+        </ion-range>
+
+        <ion-text color="medium"><h6>Continente de destino</h6></ion-text>
+        <div class="chips">
+          <ion-chip
+            *ngFor="let continente of continentes"
+            [outline]="continenteSeleccionado !== continente"
+            [color]="continenteSeleccionado === continente ? 'primary' : 'medium'"
+            (click)="seleccionarContinente(continente)"
+          >
+            <ion-label>{{ continente }}</ion-label>
+            <ion-icon *ngIf="continenteSeleccionado === continente" name="close-circle"></ion-icon>
+          </ion-chip>
+        </div>
+
+        <div class="botones-filtro">
+          <ion-button fill="outline" color="medium" (click)="limpiarFiltros()">Limpiar</ion-button>
+          <ion-button (click)="aplicarFiltros()">
+            Aplicar filtros
+            <ion-icon slot="end" name="arrow-forward"></ion-icon>
+          </ion-button>
+        </div>
+      </div>
+    </ion-accordion>
+  </ion-accordion-group>
+
+  <!-- Encabezado de resultados + ordenar -->
+  <div class="encabezado-resultados">
+    <ion-text>
+      <strong>{{ vuelos.length }}</strong> vuelos {{ modo === 'aleatorio' ? 'sugeridos' : 'encontrados' }}
+    </ion-text>
+    <ion-select
+      [(ngModel)]="orden"
+      (ionChange)="ordenarVuelos()"
+      interface="popover"
+      label="Ordenar"
+      labelPlacement="start"
+    >
+      <ion-select-option value="recomendado">Recomendado</ion-select-option>
+      <ion-select-option value="corto">Más cortos</ion-select-option>
+      <ion-select-option value="largo">Más largos</ion-select-option>
+      <ion-select-option value="distancia">Más lejos</ion-select-option>
+    </ion-select>
+  </div>
+
+  <!-- Esqueletos mientras carga -->
+  <div *ngIf="cargando" class="ion-padding-horizontal">
+    <div *ngFor="let e of esqueletos" class="esqueleto">
+      <ion-skeleton-text [animated]="true" style="width: 40%"></ion-skeleton-text>
+      <ion-skeleton-text [animated]="true" style="width: 90%; height: 28px"></ion-skeleton-text>
+      <ion-skeleton-text [animated]="true" style="width: 60%"></ion-skeleton-text>
+    </div>
+  </div>
+
+  <!-- Lista de vuelos (componente reutilizable) -->
+  <app-tarjeta-vuelo
+    *ngFor="let vuelo of vuelos; trackBy: trackPorCodigo"
+    [vuelo]="vuelo"
+    (seleccionar)="abrirReserva($event)"
+  ></app-tarjeta-vuelo>
+
+  <ion-text color="medium" *ngIf="!cargando && vuelos.length === 0">
+    <p class="ion-text-center ion-padding">
+      😕 No hay vuelos con esos filtros. Prueba ampliar la duración o cambiar el continente.
+    </p>
+  </ion-text>
+
+  <!-- Scroll infinito -->
+  <ion-infinite-scroll (ionInfinite)="cargarMas($event)" [disabled]="!hayMas || cargando">
+    <ion-infinite-scroll-content loadingText="Buscando más vuelos..."></ion-infinite-scroll-content>
+  </ion-infinite-scroll>
+
+  <!-- Boton flotante "Sorpréndeme" -->
+  <ion-fab slot="fixed" vertical="bottom" horizontal="end">
+    <ion-fab-button color="secondary" (click)="sorprendeme()">
+      <ion-icon name="dice"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</ion-content>

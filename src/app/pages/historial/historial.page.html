@@ -1,0 +1,133 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Mi historial</ion-title>
+    <ion-buttons slot="end">
+      <!-- Este boton abre el ion-popover de abajo -->
+      <ion-button id="boton-ordenar">
+        <ion-icon slot="icon-only" name="swap-vertical-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+
+  <ion-toolbar>
+    <ion-segment [(ngModel)]="filtroEstado" (ionChange)="aplicarFiltros()" [scrollable]="true">
+      <ion-segment-button value="todos"><ion-label>Todos</ion-label></ion-segment-button>
+      <ion-segment-button value="completado"><ion-label>Completados</ion-label></ion-segment-button>
+      <ion-segment-button value="desviado"><ion-label>Desviados</ion-label></ion-segment-button>
+    </ion-segment>
+  </ion-toolbar>
+</ion-header>
+
+<!-- Popover para ordenar -->
+<ion-popover trigger="boton-ordenar" [dismissOnSelect]="true">
+  <ng-template>
+    <ion-list lines="none">
+      <ion-item button [detail]="false" (click)="cambiarOrden('recientes')">
+        <ion-label>Más recientes</ion-label>
+        <ion-icon *ngIf="orden === 'recientes'" slot="end" name="checkmark-circle" color="primary"></ion-icon>
+      </ion-item>
+      <ion-item button [detail]="false" (click)="cambiarOrden('antiguos')">
+        <ion-label>Más antiguos</ion-label>
+        <ion-icon *ngIf="orden === 'antiguos'" slot="end" name="checkmark-circle" color="primary"></ion-icon>
+      </ion-item>
+      <ion-item button [detail]="false" (click)="cambiarOrden('largos')">
+        <ion-label>Más tiempo de foco</ion-label>
+        <ion-icon *ngIf="orden === 'largos'" slot="end" name="checkmark-circle" color="primary"></ion-icon>
+      </ion-item>
+    </ion-list>
+  </ng-template>
+</ion-popover>
+
+<ion-content>
+  <ion-refresher slot="fixed" (ionRefresh)="cargarHistorial($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <ion-searchbar
+    [(ngModel)]="textoBusqueda"
+    (ionInput)="aplicarFiltros()"
+    placeholder="Buscar ciudad o enfoque"
+    [debounce]="300"
+  ></ion-searchbar>
+
+  <div class="ion-text-center ion-padding" *ngIf="cargando">
+    <ion-spinner name="dots"></ion-spinner>
+  </div>
+
+  <ion-text color="medium" class="ayuda" *ngIf="!cargando && grupos.length > 0">
+    <small>Desliza un vuelo hacia la izquierda para eliminarlo</small>
+  </ion-text>
+
+  <!-- Un acordeon por mes -->
+  <ion-accordion-group [multiple]="true" [value]="gruposAbiertos">
+    <ion-accordion *ngFor="let grupo of grupos" [value]="grupo.titulo">
+      <ion-item slot="header" color="light">
+        <ion-label class="mes">{{ grupo.titulo }}</ion-label>
+        <ion-note slot="end">{{ grupo.reservas.length }} vuelos · {{ grupo.minutos | duracion }}</ion-note>
+      </ion-item>
+
+      <ion-list slot="content">
+        <ion-item-sliding *ngFor="let reserva of grupo.reservas" #itemDeslizable>
+          <ion-item button (click)="abrirDetalle(reserva)">
+            <ion-thumbnail slot="start" class="miniatura">
+              <span>{{ reserva.vuelo.destino.iata }}</span>
+            </ion-thumbnail>
+            <ion-label>
+              <h2>{{ reserva.vuelo.origen.ciudad }} → {{ reserva.vuelo.destino.ciudad }}</h2>
+              <p>{{ reserva.fechaInicio | date: "EEE d MMM, h:mm a" }} · {{ reserva.etiqueta }}</p>
+              <ion-badge [color]="obtenerColorEstado(reserva.estado)">
+                {{ obtenerTextoEstado(reserva.estado) }}
+              </ion-badge>
+            </ion-label>
+            <ion-note slot="end">{{ reserva.minutosVolados | duracion }}</ion-note>
+          </ion-item>
+
+          <ion-item-options side="end">
+            <ion-item-option color="danger" (click)="eliminar(reserva, itemDeslizable)">
+              <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+            </ion-item-option>
+          </ion-item-options>
+        </ion-item-sliding>
+      </ion-list>
+    </ion-accordion>
+  </ion-accordion-group>
+
+  <div class="vacio ion-text-center" *ngIf="!cargando && grupos.length === 0">
+    <ion-icon name="airplane"></ion-icon>
+    <h3>No hay vuelos aquí</h3>
+    <p>Cuando completes sesiones de foco aparecerán en tu historial.</p>
+  </div>
+
+  <!-- Modal tipo "sheet" con el detalle del vuelo -->
+  <ion-modal
+    [isOpen]="modalAbierto"
+    (didDismiss)="cerrarDetalle()"
+    [initialBreakpoint]="0.75"
+    [breakpoints]="[0, 0.75, 1]"
+  >
+    <ng-template>
+      <ion-content class="ion-padding">
+        <ng-container *ngIf="reservaDetalle">
+          <h2 class="titulo-modal">Detalle del vuelo</h2>
+          <app-pase-abordar
+            [vuelo]="reservaDetalle.vuelo"
+            [pasajero]="usuario?.nombre || ''"
+            [asiento]="reservaDetalle.asiento"
+            [puerta]="reservaDetalle.puerta"
+            [etiqueta]="reservaDetalle.etiqueta"
+            [fecha]="reservaDetalle.fechaInicio"
+            [estado]="reservaDetalle.estado"
+          ></app-pase-abordar>
+          <p *ngIf="reservaDetalle.nota" class="nota">📝 {{ reservaDetalle.nota }}</p>
+          <p class="texto-pequeno">
+            Minutos de foco: {{ reservaDetalle.minutosVolados }} de {{ reservaDetalle.vuelo.duracionMin }}
+          </p>
+          <ion-button expand="block" fill="outline" (click)="cerrarDetalle()">Cerrar</ion-button>
+        </ng-container>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+</ion-content>

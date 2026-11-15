@@ -35,3 +35,29 @@
 /* @import "@ionic/angular/css/palettes/dark.always.css"; */
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
 @import '@ionic/angular/css/palettes/dark.system.css';
+
+/* ---------------- Estilos globales de FlyDesk ---------------- */
+
+/* Codigo IATA grande (BOG, MDE...) usado en varias pantallas */
+.codigo-iata {
+  font-size: 1.9rem;
+  font-weight: 800;
+  letter-spacing: 2px;
+  line-height: 1;
+}
+
+.texto-pequeno {
+  font-size: 0.8rem;
+  color: var(--ion-color-medium);
+}
+
+/* Fondo oscuro tipo cielo nocturno (login, vuelo en curso) */
+.fondo-cielo {
+  --background: var(--fd-fondo-cielo);
+  color: #ffffff;
+}
+
+/* Las tarjetas se ven un poco mas redondeadas */
+ion-card {
+  border-radius: 16px;
+}

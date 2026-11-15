@@ -1,0 +1,127 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>FlyDesk</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <!-- Deslizar hacia abajo para recargar -->
+  <ion-refresher slot="fixed" (ionRefresh)="cargarDatos($event)">
+    <ion-refresher-content pullingText="Desliza para actualizar" refreshingSpinner="crescent"></ion-refresher-content>
+  </ion-refresher>
+
+  <!-- Saludo -->
+  <div class="saludo">
+    <h2>{{ obtenerSaludo() }}, {{ obtenerPrimerNombre() }} 👋</h2>
+    <p>¿A dónde vuela tu concentración hoy?</p>
+  </div>
+
+  <!-- Vuelo en curso (solo si hay uno) -->
+  <ion-card *ngIf="vueloEnCurso" color="secondary" button (click)="continuarVuelo()">
+    <ion-card-header>
+      <ion-card-subtitle>Tienes un vuelo en curso</ion-card-subtitle>
+      <ion-card-title>
+        {{ vueloEnCurso.vuelo.origen.iata }} → {{ vueloEnCurso.vuelo.destino.iata }}
+      </ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      Toca para volver a la cabina y seguir concentrándote.
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Meta diaria -->
+  <ion-card>
+    <ion-card-header>
+      <ion-card-subtitle>Meta de hoy</ion-card-subtitle>
+      <ion-card-title>
+        {{ estadisticas?.minutosHoy || 0 }} / {{ usuario?.ajustes?.metaDiariaMin }} min
+      </ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-progress-bar
+        [value]="obtenerProgresoMeta()"
+        [color]="obtenerProgresoMeta() >= 1 ? 'success' : 'primary'"
+        [type]="cargando ? 'indeterminate' : 'determinate'"
+      ></ion-progress-bar>
+      <ion-text color="success" *ngIf="obtenerProgresoMeta() >= 1">
+        <p>🎉 ¡Cumpliste tu meta de hoy!</p>
+      </ion-text>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Estadisticas en una cuadricula 2x2 -->
+  <ion-grid>
+    <ion-row>
+      <ion-col size="6">
+        <app-tarjeta-estadistica
+          icono="time-outline"
+          titulo="Horas de foco"
+          [valor]="obtenerHorasTotales()"
+          [cargando]="cargando"
+        ></app-tarjeta-estadistica>
+      </ion-col>
+      <ion-col size="6">
+        <app-tarjeta-estadistica
+          icono="airplane-outline"
+          titulo="Vuelos completados"
+          color="success"
+          [valor]="estadisticas?.completados || 0"
+          [cargando]="cargando"
+        ></app-tarjeta-estadistica>
+      </ion-col>
+      <ion-col size="6">
+        <app-tarjeta-estadistica
+          icono="navigate-outline"
+          titulo="Kilómetros"
+          color="tertiary"
+          [valor]="obtenerKilometros()"
+          [cargando]="cargando"
+        ></app-tarjeta-estadistica>
+      </ion-col>
+      <ion-col size="6">
+        <app-tarjeta-estadistica
+          icono="flame-outline"
+          titulo="Racha (días)"
+          color="danger"
+          [valor]="estadisticas?.rachaDias || 0"
+          [cargando]="cargando"
+        ></app-tarjeta-estadistica>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <!-- Ultimos vuelos -->
+  <ion-list inset="true">
+    <ion-list-header>
+      <ion-label>Últimos vuelos</ion-label>
+      <ion-button size="small" (click)="irAHistorial()">Ver todos</ion-button>
+    </ion-list-header>
+
+    <ion-item *ngFor="let reserva of ultimosVuelos">
+      <ion-avatar slot="start" class="avatar-estado" [class.desviado]="reserva.estado === 'desviado'">
+        <ion-icon [name]="reserva.estado === 'completado' ? 'checkmark-circle' : 'close-circle'"></ion-icon>
+      </ion-avatar>
+      <ion-label>
+        <h3>{{ reserva.vuelo.origen.ciudad }} → {{ reserva.vuelo.destino.ciudad }}</h3>
+        <p>{{ reserva.etiqueta }} · {{ reserva.fechaInicio | date: 'd MMM, h:mm a' }}</p>
+      </ion-label>
+      <ion-note slot="end">{{ reserva.minutosVolados | duracion }}</ion-note>
+    </ion-item>
+
+    <ion-item *ngIf="!cargando && ultimosVuelos.length === 0" lines="none">
+      <ion-label class="ion-text-wrap">
+        <p>Todavía no tienes vuelos. ¡Toca el botón ✈ para despegar tu primera sesión!</p>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+
+  <!-- Boton flotante para ir a buscar vuelos -->
+  <ion-fab slot="fixed" vertical="bottom" horizontal="end">
+    <ion-fab-button color="secondary" (click)="irABuscar()">
+      <ion-icon name="airplane"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</ion-content>

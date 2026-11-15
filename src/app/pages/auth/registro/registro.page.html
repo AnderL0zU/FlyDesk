@@ -1,0 +1,87 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/login" text="Atrás"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Crear cuenta</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-text color="medium">
+    <p>Crea tu "pasaporte" de FlyDesk para guardar tus vuelos de concentración.</p>
+  </ion-text>
+
+  <form #formulario="ngForm" (ngSubmit)="registrarse(formulario)" class="formulario">
+    <ion-input
+      name="nombre"
+      label="Nombre completo"
+      labelPlacement="floating"
+      fill="outline"
+      [(ngModel)]="datos.nombre"
+      required
+      minlength="3"
+      [counter]="true"
+      maxlength="40"
+      errorText="Escribe tu nombre (mínimo 3 letras)"
+    ></ion-input>
+
+    <ion-input
+      name="email"
+      type="email"
+      label="Correo electrónico"
+      labelPlacement="floating"
+      fill="outline"
+      [(ngModel)]="datos.email"
+      required
+      email
+      errorText="Correo no válido"
+    ></ion-input>
+
+    <ion-input
+      name="password"
+      type="password"
+      label="Contraseña"
+      labelPlacement="floating"
+      fill="outline"
+      helperText="Mínimo 6 caracteres"
+      [(ngModel)]="datos.password"
+      required
+      minlength="6"
+      errorText="Mínimo 6 caracteres"
+    >
+      <ion-input-password-toggle slot="end"></ion-input-password-toggle>
+    </ion-input>
+
+    <ion-input
+      name="confirmar"
+      type="password"
+      label="Confirmar contraseña"
+      labelPlacement="floating"
+      fill="outline"
+      [(ngModel)]="confirmarPassword"
+      required
+    >
+      <ion-input-password-toggle slot="end"></ion-input-password-toggle>
+    </ion-input>
+
+    <!-- ngIf: solo aparece si las contraseñas no son iguales -->
+    <ion-text color="danger" *ngIf="confirmarPassword.length > 0 && !passwordsCoinciden()">
+      <small>Las contraseñas no coinciden</small>
+    </ion-text>
+
+    <ion-checkbox name="terminos" [(ngModel)]="aceptaTerminos" labelPlacement="end" justify="start">
+      Acepto que mis datos se guarden en este celular
+    </ion-checkbox>
+
+    <ion-button
+      type="submit"
+      expand="block"
+      shape="round"
+      [disabled]="formulario.invalid || !passwordsCoinciden() || !aceptaTerminos"
+    >
+      <ion-icon slot="start" name="person-add-outline"></ion-icon>
+      Registrarme
+    </ion-button>
+  </form>
+</ion-content>

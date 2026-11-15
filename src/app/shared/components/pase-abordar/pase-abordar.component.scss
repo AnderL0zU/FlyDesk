@@ -1,0 +1,90 @@
+.pase {
+  border-radius: 18px;
+  overflow: hidden;
+  background: var(--ion-card-background, var(--ion-background-color, #ffffff));
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+  border: 1px solid var(--fd-borde-suave);
+}
+
+.pase-cabecera {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: var(--ion-color-primary);
+  color: #ffffff;
+
+  .marca {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 800;
+    letter-spacing: 1px;
+  }
+}
+
+.pase-ruta {
+  padding: 12px 12px 4px;
+
+  .ciudad {
+    font-size: 0.85rem;
+    margin-top: 4px;
+  }
+
+  .icono-ruta {
+    font-size: 28px;
+    color: var(--ion-color-secondary);
+  }
+}
+
+// Linea punteada con dos "mordidas" a los lados
+.perforacion {
+  position: relative;
+  border-top: 2px dashed var(--ion-color-step-300, #cccccc);
+  margin: 8px 18px;
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    top: -12px;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--ion-background-color, #ffffff);
+  }
+
+  &::before {
+    left: -30px;
+  }
+
+  &::after {
+    right: -30px;
+  }
+}
+
+.pase-datos {
+  padding: 0 12px 12px;
+
+  ion-col {
+    padding-bottom: 8px;
+  }
+
+  strong {
+    font-size: 0.95rem;
+  }
+}
+
+.pase-clima {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: rgba(var(--ion-color-secondary-rgb), 0.12);
+  font-size: 0.9rem;
+
+  ion-icon {
+    font-size: 22px;
+    color: var(--ion-color-secondary);
+  }
+}

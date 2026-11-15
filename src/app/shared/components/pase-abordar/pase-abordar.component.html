@@ -1,0 +1,82 @@
+<div class="pase">
+  <!-- Parte superior: ruta -->
+  <div class="pase-cabecera">
+    <div class="marca">
+      <ion-icon name="airplane"></ion-icon>
+      FlyDesk
+    </div>
+    <ion-badge [color]="obtenerColorEstado()">{{ obtenerTextoEstado() }}</ion-badge>
+  </div>
+
+  <ion-grid class="pase-ruta">
+    <ion-row class="ion-align-items-center">
+      <ion-col size="5">
+        <div class="texto-pequeno">Desde</div>
+        <div class="codigo-iata">{{ vuelo.origen.iata }}</div>
+        <div class="ciudad">{{ vuelo.origen.ciudad }}</div>
+      </ion-col>
+      <ion-col size="2" class="ion-text-center">
+        <ion-icon name="airplane" class="icono-ruta"></ion-icon>
+      </ion-col>
+      <ion-col size="5" class="ion-text-end">
+        <div class="texto-pequeno">Hacia</div>
+        <div class="codigo-iata">{{ vuelo.destino.iata }}</div>
+        <div class="ciudad">{{ vuelo.destino.ciudad }}</div>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <!-- Linea punteada que separa el talon del pase -->
+  <div class="perforacion"></div>
+
+  <!-- Datos del pase -->
+  <ion-grid class="pase-datos">
+    <ion-row>
+      <ion-col size="6" *ngIf="pasajero">
+        <div class="texto-pequeno">Pasajero</div>
+        <strong>{{ pasajero }}</strong>
+      </ion-col>
+      <ion-col size="6">
+        <div class="texto-pequeno">Vuelo</div>
+        <strong>{{ vuelo.codigo }}</strong>
+      </ion-col>
+      <ion-col size="4">
+        <div class="texto-pequeno">Duración</div>
+        <strong>{{ vuelo.duracionMin | duracion }}</strong>
+      </ion-col>
+      <ion-col size="4">
+        <div class="texto-pequeno">Puerta</div>
+        <strong>{{ puerta }}</strong>
+      </ion-col>
+      <ion-col size="4">
+        <div class="texto-pequeno">Asiento</div>
+        <strong>{{ asiento }}</strong>
+      </ion-col>
+      <ion-col size="6">
+        <div class="texto-pequeno">Distancia</div>
+        <strong>{{ vuelo.distanciaKm | number: '1.0-0' }} km</strong>
+      </ion-col>
+      <ion-col size="6" *ngIf="etiqueta">
+        <div class="texto-pequeno">Enfoque</div>
+        <strong>{{ etiqueta }}</strong>
+      </ion-col>
+      <ion-col size="12" *ngIf="fecha">
+        <div class="texto-pequeno">Fecha</div>
+        <strong>{{ fecha | date: 'EEEE d MMM y, h:mm a' }}</strong>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <!-- Clima del destino (viene de la API Open-Meteo) -->
+  <div class="pase-clima" *ngIf="cargandoClima || clima">
+    <ng-container *ngIf="cargandoClima">
+      <ion-skeleton-text [animated]="true" style="width: 70%"></ion-skeleton-text>
+    </ng-container>
+    <ng-container *ngIf="!cargandoClima && clima">
+      <ion-icon [name]="clima.icono"></ion-icon>
+      <span>
+        Ahora en {{ vuelo.destino.ciudad }}: <strong>{{ clima.temperatura }}°C</strong>, {{ clima.descripcion }}
+      </span>
+    </ng-container>
+  </div>
+</div>

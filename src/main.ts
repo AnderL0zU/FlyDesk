@@ -1,3 +1,7 @@
+import { registerLocaleData } from '@angular/common';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import localeEs from '@angular/common/locales/es';
+import { LOCALE_ID, provideZoneChangeDetection } from '@angular/core';
 import { bootstrapApplication } from '@angular/platform-browser';
 import {
   RouteReuseStrategy,
@@ -10,11 +14,21 @@ import { IonicRouteStrategy, provideIonicAngular } from '@ionic/angular';
 
 import { AppComponent } from './app/app.component';
 import { routes } from './app/app.routes';
+import { apiFalsaInterceptor } from './app/core/interceptors/api-falsa.interceptor';
+
+// Fechas y numeros en español (pipes date, number, etc.)
+registerLocaleData(localeEs, 'es');
 
 bootstrapApplication(AppComponent, {
   providers: [
+    { provide: LOCALE_ID, useValue: 'es' },
+    // zone.js: Angular actualiza la pantalla automaticamente despues de
+    // eventos, peticiones HTTP, setInterval, etc.
+    provideZoneChangeDetection({ eventCoalescing: true }),
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
-    provideIonicAngular(),
+    provideIonicAngular({ mode: 'md' }),
     provideRouter(routes, withPreloading(PreloadAllModules), withComponentInputBinding()),
+    // HttpClient con nuestro interceptor de la API falsa
+    provideHttpClient(withInterceptors([apiFalsaInterceptor])),
   ],
 });

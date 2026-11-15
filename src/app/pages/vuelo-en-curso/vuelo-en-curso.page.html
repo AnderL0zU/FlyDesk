@@ -1,0 +1,80 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar class="barra-transparente">
+    <ion-title>
+      <span *ngIf="reserva">{{ reserva.vuelo.codigo }}</span>
+    </ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="mostrarOpciones()" [disabled]="!reserva || terminando">
+        <ion-icon slot="icon-only" name="ellipsis-vertical"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="fondo-cielo" [fullscreen]="true">
+  <!-- Cargando -->
+  <div class="cargando" *ngIf="!reserva">
+    <ion-spinner name="crescent" color="light"></ion-spinner>
+    <p>Preparando la cabina...</p>
+  </div>
+
+  <ng-container *ngIf="reserva">
+    <!-- Globo 3D: la camara sigue al avion -->
+    <app-globo
+      [origen]="reserva.vuelo.origen"
+      [destino]="reserva.vuelo.destino"
+      [progreso]="progresoGlobo"
+      [altura]="340"
+      [seguirAvion]="true"
+      [pausado]="pausado"
+    ></app-globo>
+
+    <!-- Temporizador -->
+    <div class="panel">
+      <ion-text class="fase">{{ obtenerFase() }}</ion-text>
+      <div class="reloj" [class.reloj-pausado]="pausado">{{ restanteMs | reloj }}</div>
+      <ion-text class="texto-claro">tiempo restante de concentración</ion-text>
+
+      <div class="ruta">
+        <div>
+          <div class="codigo-iata">{{ reserva.vuelo.origen.iata }}</div>
+          <small>{{ reserva.vuelo.origen.ciudad }}</small>
+        </div>
+        <div class="porcentaje">{{ obtenerPorcentaje() }}%</div>
+        <div class="ion-text-end">
+          <div class="codigo-iata">{{ reserva.vuelo.destino.iata }}</div>
+          <small>{{ reserva.vuelo.destino.ciudad }}</small>
+        </div>
+      </div>
+
+      <ion-progress-bar [value]="progreso" [color]="pausado ? 'medium' : 'secondary'"></ion-progress-bar>
+
+      <div class="chips">
+        <ion-chip color="light" [outline]="true">
+          <ion-icon name="pricetag-outline"></ion-icon>
+          <ion-label>{{ reserva.etiqueta }}</ion-label>
+        </ion-chip>
+        <ion-chip color="light" [outline]="true">
+          <ion-icon name="airplane"></ion-icon>
+          <ion-label>{{ reserva.vuelo.duracionMin | duracion }}</ion-label>
+        </ion-chip>
+        <ion-chip color="warning" *ngIf="esModoEstricto()">
+          <ion-icon name="lock-closed-outline"></ion-icon>
+          <ion-label>Estricto</ion-label>
+        </ion-chip>
+      </div>
+
+      <p class="nota" *ngIf="reserva.nota">"{{ reserva.nota }}"</p>
+    </div>
+  </ng-container>
+</ion-content>
+
+<!-- En modo flexible se puede pausar -->
+<ion-footer class="ion-no-border pie" *ngIf="reserva && !esModoEstricto()">
+  <ion-toolbar class="barra-transparente">
+    <ion-button expand="block" shape="round" color="light" (click)="pausarOReanudar()" [disabled]="terminando">
+      <ion-icon slot="start" [name]="pausado ? 'play' : 'pause'"></ion-icon>
+      {{ pausado ? 'Reanudar vuelo' : 'Pausar' }}
+    </ion-button>
+  </ion-toolbar>
+</ion-footer>
