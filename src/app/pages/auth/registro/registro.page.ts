@@ -15,17 +15,11 @@ import {
   IonToolbar,
 } from '@ionic/angular';
 import { addIcons } from 'ionicons';
-import {
-  atOutline,
-  calendarOutline,
-  lockClosedOutline,
-  personOutline,
-} from 'ionicons/icons';
+import { atOutline, calendarOutline, lockClosedOutline, personOutline } from 'ionicons/icons';
 
 import { AuthService } from '../../../core/services/auth.service';
 import { MensajesService } from '../../../core/services/mensajes.service';
 import type { DatosRegistro } from '../../../models/usuario.model';
-
 
 interface CamposTocados {
   username: boolean;
@@ -67,7 +61,8 @@ export class RegistroPage {
     password: '',
   };
 
-  tocados: CamposTocados = { //para no mostrar errores antes de tiempo
+  tocados: CamposTocados = {
+    //para no mostrar errores antes de tiempo
     username: false,
     email: false,
     edad: false,
@@ -83,7 +78,7 @@ export class RegistroPage {
     this.tocados[campo] = true;
   }
 
-  //validaciones 
+  //validaciones
 
   errorUsername(): string {
     const username = (this.datos.username || '').trim();
@@ -108,7 +103,7 @@ export class RegistroPage {
     if (email === '') {
       return 'Escribe tu correo electrónico';
     }
-    
+
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
       return 'El correo no es válido (ejemplo: nombre@correo.com)';
     }
@@ -147,7 +142,6 @@ export class RegistroPage {
     return '';
   }
 
-  
   mostrarError(campo: keyof CamposTocados): string {
     if (!this.tocados[campo]) {
       return '';
@@ -163,10 +157,12 @@ export class RegistroPage {
   }
 
   formularioValido(): boolean {
-    return this.errorUsername() === '' && this.errorEmail() === '' && this.errorEdad() === '' && this.errorPassword() === '';
+    return (
+      this.errorUsername() === '' && this.errorEmail() === '' && this.errorEdad() === '' && this.errorPassword() === ''
+    );
   }
 
-  //enviar 
+  //enviar
   crearCuenta(): void {
     // al intentar enviar se marca todo como tocado para que se vean los errores
     this.tocados = { username: true, email: true, edad: true, password: true };
@@ -193,6 +189,4 @@ export class RegistroPage {
     this.mensajes.exito('¡Cuenta creada! Bienvenido, ' + datosLimpios.username);
     this.router.navigateByUrl('/tabs/inicio', { replaceUrl: true }); // Se pasa a la pagina de inicio
   }
-
-  
 }

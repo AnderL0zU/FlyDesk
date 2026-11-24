@@ -1,10 +1,5 @@
 import type { AfterViewInit, ElementRef, OnChanges, OnDestroy, SimpleChanges } from '@angular/core';
-import {
-  ChangeDetectionStrategy,
-  Component,
-  Input,
-  ViewChild,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, ViewChild } from '@angular/core';
 import type { GlobeInstance } from 'globe.gl';
 import Globe from 'globe.gl';
 

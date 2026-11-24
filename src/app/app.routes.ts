@@ -24,7 +24,6 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/auth/registro/registro.page').then((m) => m.RegistroPage),
   },
 
-  
   // Paginas con sesion iniciada
   {
     path: 'tabs',

@@ -22,12 +22,9 @@ export class AeropuertosService {
 
   // peticion 2: aeropuertos a donde se puede volar desde el origen:
   buscarDestinos(origen: Aeropuerto): Observable<Aeropuerto[]> {
-    const delPais = this.pedir(
-      'country=' + origen.codigoPais + '&has_iata=true&scheduled_service=true&limit=100',
-    );
+    const delPais = this.pedir('country=' + origen.codigoPais + '&has_iata=true&scheduled_service=true&limit=100');
     const delContinente = this.pedir('continent=' + origen.continente + '&type=large_airport&limit=100');
 
-    
     // forkJoin espera a que terminen las dos peticiones
     return forkJoin([delPais, delContinente]).pipe(
       map((respuestas) => {
@@ -36,7 +33,8 @@ export class AeropuertosService {
         for (const aeropuerto of todos) {
           // quita el origen y los repetidos
           const repetido = resultado.find((a) => a.iata === aeropuerto.iata);
-          if (aeropuerto.iata !== origen.iata && !repetido) { //es como el trycatch para evitar poner el origen o repetidos
+          if (aeropuerto.iata !== origen.iata && !repetido) {
+            //es como el trycatch para evitar poner el origen o repetidos
             resultado.push(aeropuerto);
           }
         }
@@ -50,12 +48,13 @@ export class AeropuertosService {
     const headers = new HttpHeaders({ 'X-Api-Key': environment.apiNinjasKey }); //llave
     return this.http
       .get<AeropuertoApi[]>(this.urlApi + '?' + parametros, { headers: headers }) //get parametros
-      .pipe(map((lista) => lista.map((item) => this.convertir(item))));           //convierte al modelo 
+      .pipe(map((lista) => lista.map((item) => this.convertir(item)))); //convierte al modelo
   }
 
   //se hace esto (usa 2 modelos de interface) para hacer que si se cambia de API sea mas simple
 
-  private convertir(item: AeropuertoApi): Aeropuerto { //convierte al numero modelo de interface
+  private convertir(item: AeropuertoApi): Aeropuerto {
+    //convierte al numero modelo de interface
     return {
       iata: item.iata,
       nombre: item.name,

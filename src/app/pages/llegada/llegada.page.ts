@@ -40,7 +40,20 @@ import type { VueloEnCurso } from '../../models/vuelo.model';
   templateUrl: './llegada.page.html',
   styleUrls: ['./llegada.page.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,
-  imports: [CommonModule, IonContent, IonIcon, IonCard, IonCardContent, IonList, IonItem, IonLabel, IonNote, IonButton, IonChip, IonSpinner],
+  imports: [
+    CommonModule,
+    IonContent,
+    IonIcon,
+    IonCard,
+    IonCardContent,
+    IonList,
+    IonItem,
+    IonLabel,
+    IonNote,
+    IonButton,
+    IonChip,
+    IonSpinner,
+  ],
 })
 export class LlegadaPage {
   private vueloService = inject(VueloService);
@@ -49,7 +62,6 @@ export class LlegadaPage {
 
   ultimoVuelo: VueloEnCurso | null = null;
 
-  
   clima: Clima | null = null; //Api open-meteo
   cargandoClima = false;
 
@@ -81,7 +93,8 @@ export class LlegadaPage {
     this.cargarClima(this.ultimoVuelo.vuelo.destino.lat, this.ultimoVuelo.vuelo.destino.lng);
   }
 
-  private cargarClima(lat: number, lng: number): void { //COORDS aeropuerto destino
+  private cargarClima(lat: number, lng: number): void {
+    //COORDS aeropuerto destino
     this.clima = null;
     this.cargandoClima = true;
     this.climaService.obtenerClimaActual(lat, lng).subscribe({
@@ -95,7 +108,6 @@ export class LlegadaPage {
       },
     });
   }
-
 
   formatearDuracion(minutos: number): string {
     const horas = Math.floor(minutos / 60);

@@ -28,7 +28,6 @@ export class DespeguePage {
   destino = '';
   minutos = 0;
 
-  
   cuenta = 0; //Cuenta regresiva
   contando = false;
   private intervalo: ReturnType<typeof setInterval> | null = null;
@@ -62,13 +61,11 @@ export class DespeguePage {
       return;
     }
 
-    
     this.audio = new Audio('assets/img/reserva/anuncio.mp3');
     this.audio.play().catch(() => {
       this.mensajes.error('No se pudo reproducir el anuncio');
     });
 
-    
     this.contando = true;
     this.cuenta = 3;
     this.intervalo = setInterval(() => {

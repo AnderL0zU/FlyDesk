@@ -19,9 +19,9 @@ export class ClimaService {
       longitude: lng,
       current: 'temperature_2m,weather_code,is_day',
     };
-    return this.http.get<ClimaApi>(this.url, { params: parametros }).pipe(
-      map((respuesta) => this.convertir(respuesta)),
-    );
+    return this.http
+      .get<ClimaApi>(this.url, { params: parametros })
+      .pipe(map((respuesta) => this.convertir(respuesta)));
   }
 
   // Pasamos la respuesta de la API a nuestro modelo

@@ -26,7 +26,19 @@ import type { Aeropuerto } from '../../models/aeropuerto.model';
   templateUrl: './inicio.page.html',
   styleUrls: ['./inicio.page.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,
-  imports: [CommonModule, FormsModule, IonContent, IonIcon, IonModal, IonSearchbar, IonList, IonItem, IonLabel, IonText, IonSpinner],
+  imports: [
+    CommonModule,
+    FormsModule,
+    IonContent,
+    IonIcon,
+    IonModal,
+    IonSearchbar,
+    IonList,
+    IonItem,
+    IonLabel,
+    IonText,
+    IonSpinner,
+  ],
 })
 export class InicioPage {
   private aeropuertosService = inject(AeropuertosService);
@@ -92,7 +104,7 @@ export class InicioPage {
     this.buscadorAbierto = false;
   }
 
-  // Se llama cada vez que el usuario escribe 
+  // Se llama cada vez que el usuario escribe
   buscar(): void {
     const codigo = this.textoBusqueda.trim().toUpperCase(); // texto busquda = lo que escribio el usuario ngModel
 
@@ -105,7 +117,8 @@ export class InicioPage {
 
     this.buscando = true;
     this.aeropuertosService.buscarPorCodigo(codigo).subscribe({
-      next: (lista) => {  //l API respondio
+      next: (lista) => {
+        //l API respondio
         this.resultados = lista;
         this.buscando = false;
       },

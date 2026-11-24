@@ -33,9 +33,9 @@ export class AuthService {
     return usuarios;
   }
 
-  
   //LOGIN
-  login(credenciales: Credenciales): boolean { //devuelve true si es correcto
+  login(credenciales: Credenciales): boolean {
+    //devuelve true si es correcto
     const usuarios = this.obtenerUsuarios();
     const texto = credenciales.email.trim().toLowerCase();
 
@@ -51,8 +51,6 @@ export class AuthService {
     this.guardarSesion(usuario);
     return true;
   }
-
-  
 
   // REGISTRO
   registro(datos: DatosRegistro): string {
@@ -81,9 +79,8 @@ export class AuthService {
     return '';
   }
 
-  
   // SESION
-  //GUARDAR SESION ACTUAL se hace con un token 
+  //GUARDAR SESION ACTUAL se hace con un token
   private guardarSesion(usuario: Usuario): void {
     const sesion: Sesion = {
       token: 'token-' + usuario.id,

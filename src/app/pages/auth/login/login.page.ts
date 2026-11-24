@@ -85,7 +85,6 @@ export class LoginPage {
     const usuario = this.authService.obtenerUsuario();
     this.mensajes.exito('¡Bienvenido a bordo, ' + usuario?.username + '!'); //toast
     this.credenciales.password = '';
-    this.router.navigateByUrl('/tabs/inicio', { replaceUrl: true });//reemplazando en true se entra a inicio
+    this.router.navigateByUrl('/tabs/inicio', { replaceUrl: true }); //reemplazando en true se entra a inicio
   }
-
 }

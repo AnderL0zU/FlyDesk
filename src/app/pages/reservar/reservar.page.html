@@ -17,17 +17,11 @@
   <div *ngIf="!origen" class="globo-vacio" [style.height.px]="alturaGlobo"></div>
 
   <div class="panel">
-    <p class="desde" *ngIf="origen">
-      Desde <strong>{{ origen.ciudad }} ({{ origen.iata }})</strong>
-    </p>
+    <p class="desde" *ngIf="origen">Desde <strong>{{ origen.ciudad }} ({{ origen.iata }})</strong></p>
 
     <!-- Duracion -->
     <h2 class="subtitulo">Duración</h2>
-    <ion-segment
-      class="duraciones"
-      [(ngModel)]="duracionElegida"
-      (ionChange)="filtrar()"
-    >
+    <ion-segment class="duraciones" [(ngModel)]="duracionElegida" (ionChange)="filtrar()">
       <ion-segment-button *ngFor="let minutos of duraciones" [value]="minutos">
         <ion-label>{{ formatearDuracion(minutos) }}</ion-label>
       </ion-segment-button>
@@ -48,7 +42,11 @@
 
     <ion-list *ngIf="!cargando && vuelosFiltrados.length > 0" class="lista-destinos">
       <ion-radio-group [(ngModel)]="codigoDestino">
-        <ion-item *ngFor="let vuelo of vuelosFiltrados" lines="none" [class.elegido]="vuelo.destino.iata === codigoDestino">
+        <ion-item
+          *ngFor="let vuelo of vuelosFiltrados"
+          lines="none"
+          [class.elegido]="vuelo.destino.iata === codigoDestino"
+        >
           <div class="icono-avion" slot="start">
             <ion-icon name="airplane" aria-hidden="true"></ion-icon>
           </div>

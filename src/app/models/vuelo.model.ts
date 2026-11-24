@@ -3,12 +3,12 @@ import type { Aeropuerto } from './aeropuerto.model';
 // Un vuelo posible desde el origen hasta un destino
 export interface Vuelo {
   origen: Aeropuerto; // trae y usa dentro la interfaz aeropuerto
-  destino: Aeropuerto; 
+  destino: Aeropuerto;
   distanciaKm: number;
   duracionMin: number;
 }
 
-// El vuelo que el usuario esta haciendo ahora mismo 
+// El vuelo que el usuario esta haciendo ahora mismo
 export interface VueloEnCurso {
   codigo: string; // numero de vuelo
   vuelo: Vuelo;
@@ -17,8 +17,8 @@ export interface VueloEnCurso {
   msRestantes: number; // solo se usa cuando esta en pausa
 }
 
-
-export interface RegistroVuelo { //registro vuelo = vuelo terminado
+export interface RegistroVuelo {
+  //registro vuelo = vuelo terminado
   id: string;
   codigo: string;
   origenIata: string;

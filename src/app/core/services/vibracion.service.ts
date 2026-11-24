@@ -11,7 +11,6 @@ import { AjustesService } from './ajustes.service';
 export class VibracionService {
   private ajustesService = inject(AjustesService);
 
-
   // Vibracion corta
   async toque(): Promise<void> {
     if (this.puedeVibrar()) {

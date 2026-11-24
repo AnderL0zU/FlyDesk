@@ -70,19 +70,18 @@ export class ReservarPage {
   private router = inject(Router);
   private vueloService = inject(VueloService);
 
-  origen: Aeropuerto | null = null;                // hasta que responda la api es null
+  origen: Aeropuerto | null = null; // hasta que responda la api es null
 
   duraciones: number[] = [30, 45, 60, 90, 120];
   duracionElegida = 60;
 
-  todosLosVuelos: Vuelo[] = []; 
+  todosLosVuelos: Vuelo[] = [];
   vuelosFiltrados: Vuelo[] = []; // los que coinciden con la duracion
   codigoDestino = ''; // eje: "NVA", "mde"
   cargando = true;
 
   alturaGlobo = Math.round(window.innerHeight * 0.42);
 
-  
   esqueletos = [1, 2, 3, 4]; //mientra carga
 
   constructor() {
@@ -142,10 +141,8 @@ export class ReservarPage {
     this.vuelosFiltrados = this.todosLosVuelos.filter(
       (v) => v.duracionMin >= elegida - MARGEN_MIN && v.duracionMin <= elegida + MARGEN_MIN,
     ); // primero los de 45 y 75min
-    
-    this.vuelosFiltrados.sort(
-      (a, b) => Math.abs(a.duracionMin - elegida) - Math.abs(b.duracionMin - elegida),
-    ); // mas cercanos a 60
+
+    this.vuelosFiltrados.sort((a, b) => Math.abs(a.duracionMin - elegida) - Math.abs(b.duracionMin - elegida)); // mas cercanos a 60
 
     // deja seleccionado el primero de la lista
     if (this.vuelosFiltrados.length > 0) {

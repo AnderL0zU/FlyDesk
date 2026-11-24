@@ -18,14 +18,7 @@ import {
   IonToolbar,
 } from '@ionic/angular';
 import { addIcons } from 'ionicons';
-import {
-  documentText,
-  logOutOutline,
-  notifications,
-  pulse,
-  shieldCheckmark,
-  sunny,
-} from 'ionicons/icons';
+import { documentText, logOutOutline, notifications, pulse, shieldCheckmark, sunny } from 'ionicons/icons';
 
 import { AjustesService } from '../../core/services/ajustes.service';
 import { AuthService } from '../../core/services/auth.service';

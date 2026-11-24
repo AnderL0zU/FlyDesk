@@ -5,7 +5,6 @@ import type { VueloEnCurso } from '../../models/vuelo.model';
 
 import { AjustesService } from './ajustes.service';
 
-
 // Programa un aviso para la hora en que aterriza el vuelo
 const ID_ATERRIZAJE = 1;
 

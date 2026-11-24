@@ -32,7 +32,7 @@
   >
     <ng-template>
       <ion-content class="contenido-hoja">
-        <ion-searchbar 
+        <ion-searchbar
           class="buscador"
           placeholder="Código del aeropuerto (ej. BOG)"
           [(ngModel)]="textoBusqueda"
@@ -40,9 +40,11 @@
           [debounce]="400"
           autocapitalize="characters"
           [maxlength]="3"
-        ></ion-searchbar> <!-- el debounce espera 400ms para dejar que el usuario termine de escribir completo-->
+        ></ion-searchbar>
+        <!-- el debounce espera 400ms para dejar que el usuario termine de escribir completo-->
 
-        <ion-list class="lista-aeropuertos" *ngIf="!buscando"> <!-- Lista completa resultados-->
+        <ion-list class="lista-aeropuertos" *ngIf="!buscando">
+          <!-- Lista completa resultados-->
           <ion-item *ngFor="let aeropuerto of resultados" button [detail]="false" (click)="elegir(aeropuerto)">
             <div class="icono-avion" slot="start">
               <ion-icon name="airplane" aria-hidden="true"></ion-icon>
@@ -59,7 +61,10 @@
           <p>Escribe al menos 2 letras del código</p>
         </ion-text>
 
-        <ion-text *ngIf="!buscando && textoBusqueda.trim().length >= 2 && resultados.length === 0" class="sin-resultados">
+        <ion-text
+          *ngIf="!buscando && textoBusqueda.trim().length >= 2 && resultados.length === 0"
+          class="sin-resultados"
+        >
           <p>No encontramos aeropuertos con "{{ textoBusqueda }}"</p>
         </ion-text>
       </ion-content>

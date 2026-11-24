@@ -5,7 +5,6 @@ import type { RegistroVuelo, VueloEnCurso } from '../../models/vuelo.model';
 import { AuthService } from './auth.service';
 import { StorageService } from './storage.service';
 
-
 @Injectable({
   providedIn: 'root',
 })

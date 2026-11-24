@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import type { OnDestroy} from '@angular/core';
+import type { OnDestroy } from '@angular/core';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import {
@@ -26,7 +26,7 @@ interface PasoBienvenida {
   tipo: 'foto-estudiante' | 'cerebro' | 'nubes' | 'cabina' | 'globo' | 'final';
   titulo: string;
   texto: string;
-  imagen?: string; // ruta 
+  imagen?: string; // ruta
 }
 
 // Pantallas que se muestran la primera vez que se abre la app (onboarding)
@@ -96,8 +96,8 @@ export class BienvenidaPage implements OnDestroy {
   //background de respaldo (solido)
   imagenesConError: string[] = [];
 
-  
-  origenDemo: Aeropuerto = { // globo bienvenid 5
+  origenDemo: Aeropuerto = {
+    // globo bienvenid 5
     iata: 'BOG',
     nombre: 'Aeropuerto El Dorado',
     ciudad: 'Bogotá',
@@ -169,11 +169,6 @@ export class BienvenidaPage implements OnDestroy {
     return !!paso.imagen && !this.imagenesConError.includes(paso.imagen);
   }
 
-
-
-
-
-  
   // Tpdo lo del globo
   // deslizar
   alTocar(evento: TouchEvent): void {
@@ -189,7 +184,7 @@ export class BienvenidaPage implements OnDestroy {
     }
   }
 
-  // Globo 
+  // Globo
   // En la pantalla del globo el avion avanza poco a poco y vuelve a empezar
   private revisarGlobo(): void {
     if (this.pasos[this.pasoActual].tipo === 'globo') {

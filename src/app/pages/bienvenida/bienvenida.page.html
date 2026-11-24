@@ -7,7 +7,9 @@
       </ion-button>
     </ion-buttons>
     <ion-buttons slot="end">
-      <ion-button *ngIf="!esUltimoPaso()" class="boton-omitir" fill="clear" color="medium" (click)="terminar()">Omitir</ion-button>
+      <ion-button *ngIf="!esUltimoPaso()" class="boton-omitir" fill="clear" color="medium" (click)="terminar()"
+        >Omitir</ion-button
+      >
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
@@ -72,12 +74,7 @@
     <!-- 5. Globo 3D con un vuelo de ejemplo -->
     <ng-container *ngSwitchCase="'globo'">
       <div class="zona-globo">
-        <app-globo
-          [origen]="origenDemo"
-          [destino]="destinoDemo"
-          [progreso]="progresoDemo"
-          [altura]="430"
-        ></app-globo>
+        <app-globo [origen]="origenDemo" [destino]="destinoDemo" [progreso]="progresoDemo" [altura]="430"></app-globo>
       </div>
     </ng-container>
 

@@ -76,7 +76,8 @@ export class HistorialPage {
     addIcons({ airplane, timeOutline, trashOutline });
   }
 
-  ionViewWillEnter(): void { // Se llama cada vez que se entra a la pestaña
+  ionViewWillEnter(): void {
+    // Se llama cada vez que se entra a la pestaña
     this.cargar();
   }
 
