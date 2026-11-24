@@ -296,9 +296,7 @@ npm run build
 
 Genera la versión de producción en la carpeta `www/`.
 
-## Pasos que seguí para instalar la app
 
-_(Escribir aquí con mis propias palabras.)_
 
 ## Propósito académico
 
