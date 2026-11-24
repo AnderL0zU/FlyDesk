@@ -1,46 +1,33 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Capacitor } from '@capacitor/core';
-import { Haptics, ImpactStyle, NotificationType } from '@capacitor/haptics';
-import { AuthService } from './auth.service';
+import { Haptics, ImpactStyle } from '@capacitor/haptics';
 
-// Plugin de Capacitor: @capacitor/haptics (vibracion del celular)
+import { AjustesService } from './ajustes.service';
+
+//capacitor/hapticsvibracion del celular
 @Injectable({
   providedIn: 'root',
 })
 export class VibracionService {
-  constructor(private authService: AuthService) {}
+  private ajustesService = inject(AjustesService);
 
-  // Solo vibra si estamos en el celular y el usuario lo tiene activado
-  private puedeVibrar(): boolean {
-    const usuario = this.authService.obtenerUsuario();
-    if (!Capacitor.isNativePlatform() || usuario === null) {
-      return false;
-    }
-    return usuario.ajustes.vibracion;
-  }
 
+  // Vibracion corta
   async toque(): Promise<void> {
     if (this.puedeVibrar()) {
-      await Haptics.impact({ style: ImpactStyle.Light });
+      await Haptics.impact({ style: ImpactStyle.Light }); //light
     }
   }
 
-  async despegue(): Promise<void> {
+  // Vibracion fuerte
+  async fuerte(): Promise<void> {
     if (this.puedeVibrar()) {
-      await Haptics.impact({ style: ImpactStyle.Heavy });
-      await Haptics.vibrate({ duration: 300 });
+      await Haptics.impact({ style: ImpactStyle.Heavy }); //heavy
     }
   }
 
-  async aterrizaje(): Promise<void> {
-    if (this.puedeVibrar()) {
-      await Haptics.notification({ type: NotificationType.Success });
-    }
-  }
-
-  async alerta(): Promise<void> {
-    if (this.puedeVibrar()) {
-      await Haptics.notification({ type: NotificationType.Warning });
-    }
+  //solo vibra en celular y tambien si el usuario lo tiene activado en ajustes
+  private puedeVibrar(): boolean {
+    return Capacitor.isNativePlatform() && this.ajustesService.obtener().vibracion;
   }
 }

@@ -1,0 +1,134 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar class="barra">
+    <ion-title>Ajustes</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="contenido-ajustes">
+  <!-- Preferencias del vuelo -->
+  <ion-list class="grupo" lines="full">
+    <ion-item>
+      <ion-icon slot="start" name="pulse" aria-hidden="true"></ion-icon>
+      <ion-toggle [(ngModel)]="ajustes.vibracion" (ionChange)="cambiarVibracion()">Vibración</ion-toggle>
+    </ion-item>
+
+    <ion-item>
+      <ion-icon slot="start" name="sunny" aria-hidden="true"></ion-icon>
+      <ion-toggle [(ngModel)]="ajustes.pantallaEncendida" (ionChange)="cambiarPantalla()">
+        Mantener la pantalla encendida durante el vuelo
+      </ion-toggle>
+    </ion-item>
+
+    <ion-item lines="none">
+      <ion-icon slot="start" name="notifications" aria-hidden="true"></ion-icon>
+      <ion-toggle [(ngModel)]="ajustes.notificaciones" (ionChange)="cambiarNotificaciones()">
+        Avisarme cuando aterrice
+      </ion-toggle>
+    </ion-item>
+  </ion-list>
+
+  <!-- Acerca de -->
+  <ion-list-header class="titulo-seccion">
+    <ion-label>Acerca de</ion-label>
+  </ion-list-header>
+  <ion-list class="grupo" lines="full">
+    <ion-item [button]="true" [detail]="true" (click)="privacidadAbierta = true">
+      <ion-icon slot="start" name="shield-checkmark" aria-hidden="true"></ion-icon>
+      <ion-label>Política de privacidad</ion-label>
+    </ion-item>
+    <ion-item [button]="true" [detail]="true" lines="none" (click)="terminosAbiertos = true">
+      <ion-icon slot="start" name="document-text" aria-hidden="true"></ion-icon>
+      <ion-label>Términos del servicio</ion-label>
+    </ion-item>
+  </ion-list>
+
+  <!-- Cuenta -->
+  <ion-list class="grupo" lines="none">
+    <ion-item [button]="true" class="salir" (click)="cerrarSesion()">
+      <ion-icon slot="start" name="log-out-outline" aria-hidden="true"></ion-icon>
+      <ion-label>Cerrar sesión</ion-label>
+    </ion-item>
+  </ion-list>
+
+  <!-- Modal: politica de privacidad -->
+  <ion-modal [isOpen]="privacidadAbierta" (didDismiss)="privacidadAbierta = false" class="modal-texto">
+    <ng-template>
+      <ion-header class="ion-no-border">
+        <ion-toolbar class="barra-modal">
+          <ion-title>Política de privacidad</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="privacidadAbierta = false">Cerrar</ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content class="ion-padding contenido-modal">
+        <p class="fecha">Última actualización: noviembre de 2026</p>
+
+        <h3>Qué datos guardamos</h3>
+        <p>
+          FlyDesk guarda tu nombre de usuario, correo, edad, tus ajustes y el historial de tus vuelos. Todo se
+          almacena solo en tu celular; no lo enviamos a ningún servidor propio.
+        </p>
+
+        <h3>Servicios externos</h3>
+        <p>
+          Para buscar aeropuertos usamos la API de API Ninjas. A ese servicio solo le enviamos el código del
+          aeropuerto que escribes, nunca tus datos personales.
+        </p>
+
+        <h3>Permisos del celular</h3>
+        <p>
+          Las notificaciones se usan únicamente para avisarte cuando tu vuelo termina, y la vibración para
+          acompañar el despegue y el aterrizaje. Puedes desactivarlas cuando quieras desde Ajustes.
+        </p>
+
+        <h3>Borrar tus datos</h3>
+        <p>
+          Puedes eliminar tu historial desde la pestaña Historial. Si desinstalas la app, todos tus datos se
+          borran del celular.
+        </p>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+
+  <!-- Modal: terminos del servicio -->
+  <ion-modal [isOpen]="terminosAbiertos" (didDismiss)="terminosAbiertos = false" class="modal-texto">
+    <ng-template>
+      <ion-header class="ion-no-border">
+        <ion-toolbar class="barra-modal">
+          <ion-title>Términos del servicio</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="terminosAbiertos = false">Cerrar</ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content class="ion-padding contenido-modal">
+        <p class="fecha">Última actualización: noviembre de 2026</p>
+
+        <h3>Uso de la app</h3>
+        <p>
+          FlyDesk es una herramienta para ayudarte a concentrarte. Cada sesión de estudio se representa como un
+          vuelo simulado; no se trata de vuelos ni reservas reales.
+        </p>
+
+        <h3>Tu cuenta</h3>
+        <p>
+          Eres responsable de la información que registras y de mantener segura tu contraseña. La cuenta funciona
+          solo en este celular.
+        </p>
+
+        <h3>Información de aeropuertos</h3>
+        <p>
+          Los datos de aeropuertos vienen de un servicio externo y las duraciones de vuelo son aproximadas, calculadas
+          a partir de la distancia.
+        </p>
+
+        <h3>Cambios</h3>
+        <p>
+          Este es un proyecto académico y estos términos pueden cambiar. Si continúas usando la app, aceptas la
+          versión más reciente.
+        </p>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+</ion-content>

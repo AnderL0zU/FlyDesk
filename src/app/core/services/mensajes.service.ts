@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { AlertController, ToastController } from '@ionic/angular';
 
 // Ayuda a mostrar toasts y alertas de confirmacion desde cualquier pagina
@@ -6,12 +6,14 @@ import { AlertController, ToastController } from '@ionic/angular';
   providedIn: 'root',
 })
 export class MensajesService {
-  constructor(
-    private toastController: ToastController,
-    private alertController: AlertController,
-  ) {}
+  private toastController = inject(ToastController);
+  private alertController = inject(AlertController);
 
-  async mostrarToast(mensaje: string, color: string = 'dark', icono: string = 'information-circle-outline'): Promise<void> {
+  async mostrarToast(
+    mensaje: string,
+    color: string = 'dark',
+    icono: string = 'information-circle-outline',
+  ): Promise<void> {
     const toast = await this.toastController.create({
       message: mensaje,
       duration: 2500,
@@ -44,13 +46,5 @@ export class MensajesService {
     await alerta.present();
     const resultado = await alerta.onDidDismiss();
     return resultado.role === 'confirm';
-  }
-
-  // Saca el mensaje de error que manda la API (o uno generico)
-  obtenerMensajeError(err: any): string {
-    if (err && err.error && err.error.mensaje) {
-      return err.error.mensaje;
-    }
-    return 'Ocurrió un error inesperado, intenta de nuevo';
   }
 }

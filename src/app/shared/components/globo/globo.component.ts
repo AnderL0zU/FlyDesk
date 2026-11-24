@@ -1,16 +1,15 @@
+import type { AfterViewInit, ElementRef, OnChanges, OnDestroy, SimpleChanges } from '@angular/core';
 import {
-  AfterViewInit,
   ChangeDetectionStrategy,
   Component,
-  ElementRef,
   Input,
-  OnChanges,
-  OnDestroy,
   ViewChild,
 } from '@angular/core';
-import Globe, { GlobeInstance } from 'globe.gl';
-import { Aeropuerto } from '../../../models/aeropuerto.model';
-import { puntoIntermedio } from '../../../core/utils/geo.util';
+import type { GlobeInstance } from 'globe.gl';
+import Globe from 'globe.gl';
+
+import { calcularDistanciaKm, puntoIntermedio } from '../../../core/utils/geo.util';
+import type { Aeropuerto } from '../../../models/aeropuerto.model';
 
 // Componente que muestra la Tierra en 3D con la ruta del vuelo.
 // Usa la libreria globe.gl (que por dentro usa three.js / WebGL).
@@ -42,10 +41,14 @@ export class GloboComponent implements AfterViewInit, OnChanges, OnDestroy {
   }
 
   // Se ejecuta cuando cambia algun @Input (ej: el progreso)
-  ngOnChanges(): void {
+  ngOnChanges(cambios: SimpleChanges): void {
     if (this.globo) {
       this.actualizarRuta();
       this.actualizarAvion();
+      // si cambio el origen o el destino movemos la camara hacia la nueva ruta
+      if (cambios['origen'] || cambios['destino']) {
+        this.centrarCamara(900);
+      }
     }
   }
 
@@ -66,29 +69,37 @@ export class GloboComponent implements AfterViewInit, OnChanges, OnDestroy {
       .backgroundColor('rgba(0,0,0,0)') // transparente
       .globeImageUrl('assets/img/tierra-noche.jpg')
       .showAtmosphere(true)
-      .atmosphereColor('#7aa2ff')
+      .atmosphereColor('#60a5fa')
       .atmosphereAltitude(0.18);
 
     // el usuario puede girar el globo con el dedo, pero no hacer zoom
     this.globo.controls().enableZoom = false;
 
+    // Cuando la camara sigue al avion esta muy cerca,
+    // asi que hacemos los puntos, letras y la ruta mas pequeños
+    let escala = 1;
+    if (this.seguirAvion) {
+      escala = 0.3;
+    }
+
     // Puntos de origen y destino
     this.globo
-      .pointColor(() => '#f59f00')
+      .pointColor(() => '#38bdf8')
       .pointAltitude(0.01)
-      .pointRadius(0.45);
+      .pointRadius(0.45 * escala);
 
     // Etiquetas con el codigo IATA
     this.globo
       .labelText((d: any) => d.iata)
-      .labelSize(1.4)
-      .labelDotRadius(0.4)
+      .labelSize(1.4 * escala)
+      .labelDotRadius(0.4 * escala)
       .labelColor(() => '#ffffff')
       .labelResolution(2);
 
     // Ruta (arco)
     this.globo
-      .arcStroke(0.6)
+      .arcColor('color') // usa el campo "color" de cada ruta
+      .arcStroke(0.6 * escala)
       .arcAltitudeAutoScale(0.4)
       .arcDashLength(0.4)
       .arcDashGap(0.15)
@@ -109,14 +120,21 @@ export class GloboComponent implements AfterViewInit, OnChanges, OnDestroy {
   }
 
   private actualizarRuta(): void {
-    if (!this.globo || !this.origen || !this.destino) {
+    if (!this.globo || !this.origen) {
+      return;
+    }
+    // sin destino solo mostramos el punto de origen
+    if (!this.destino) {
+      this.globo.pointsData([this.origen]).pointLat('lat').pointLng('lng');
+      this.globo.labelsData([this.origen]).labelLat('lat').labelLng('lng');
+      this.globo.arcsData([]);
       return;
     }
     const puntos = [this.origen, this.destino];
     this.globo.pointsData(puntos).pointLat('lat').pointLng('lng');
     this.globo.labelsData(puntos).labelLat('lat').labelLng('lng');
 
-    const color = this.pausado ? ['#868e96', '#868e96'] : ['#f59f00', '#7aa2ff'];
+    const color = this.pausado ? ['#868e96', '#868e96'] : ['#38bdf8', '#0284c7'];
     this.globo.arcsData([
       {
         startLat: this.origen.lat,
@@ -129,7 +147,12 @@ export class GloboComponent implements AfterViewInit, OnChanges, OnDestroy {
   }
 
   private actualizarAvion(): void {
-    if (!this.globo || !this.origen || !this.destino) {
+    if (!this.globo) {
+      return;
+    }
+    // sin ruta no hay avion
+    if (!this.origen || !this.destino) {
+      this.globo.htmlElementsData([]);
       return;
     }
     // posicion del avion segun el progreso del vuelo
@@ -158,16 +181,29 @@ export class GloboComponent implements AfterViewInit, OnChanges, OnDestroy {
     this.globo.htmlElementsData([{ lat: posicion.lat, lng: posicion.lng }]);
 
     if (this.seguirAvion) {
-      this.globo.pointOfView({ lat: posicion.lat, lng: posicion.lng, altitude: 1.6 }, 900);
+      this.globo.pointOfView({ lat: posicion.lat, lng: posicion.lng, altitude: 0.5 }, 900);
     }
   }
 
   // Coloca la camara en el punto medio de la ruta
   private centrarCamara(tiempoMs: number): void {
-    if (!this.globo || !this.origen || !this.destino) {
+    if (!this.globo || !this.origen) {
       return;
     }
-    const medio = puntoIntermedio(this.origen.lat, this.origen.lng, this.destino.lat, this.destino.lng, 0.5);
-    this.globo.pointOfView({ lat: medio.lat, lng: medio.lng, altitude: this.seguirAvion ? 1.6 : 2.2 }, tiempoMs);
+    if (!this.destino) {
+      this.globo.pointOfView({ lat: this.origen.lat, lng: this.origen.lng, altitude: 1.1 }, tiempoMs);
+      return;
+    }
+    // si seguimos al avion miramos donde va el avion, si no la mitad de la ruta
+    const punto = this.seguirAvion ? this.progreso : 0.5;
+    const medio = puntoIntermedio(this.origen.lat, this.origen.lng, this.destino.lat, this.destino.lng, punto);
+
+    // entre mas corta la ruta, mas cerca ponemos la camara (maximo 2.2)
+    const distancia = calcularDistanciaKm(this.origen.lat, this.origen.lng, this.destino.lat, this.destino.lng);
+    let altitud = Math.min(2.2, 0.5 + distancia / 2000);
+    if (this.seguirAvion) {
+      altitud = 0.5;
+    }
+    this.globo.pointOfView({ lat: medio.lat, lng: medio.lng, altitude: altitud }, tiempoMs);
   }
 }

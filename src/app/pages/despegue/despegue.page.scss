@@ -1,0 +1,92 @@
+.cabecera {
+  position: absolute;
+}
+
+.barra {
+  --background: transparent;
+  padding: 6px 10px 0;
+}
+
+.boton-atras {
+  --background: rgba(255, 255, 255, 0.08);
+  --border-radius: 14px;
+  --color: #ffffff;
+}
+
+.contenido-despegue {
+  --background: radial-gradient(circle at 50% 42%, #12305a 0%, #0b1a33 45%, #070f1f 100%);
+}
+
+.centro {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0 24px 90px;
+  text-align: center;
+}
+
+.pista {
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  background: radial-gradient(circle, rgba(56, 189, 248, 0.18) 0%, rgba(56, 189, 248, 0) 72%);
+}
+
+.avion-despegue {
+  font-size: 92px;
+  color: var(--ion-color-primary);
+
+  transform: rotate(-30deg);
+  animation: despegar 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes despegar {
+  from {
+    opacity: 0;
+    transform: translate(-40px, 30px) rotate(-10deg);
+  }
+  to {
+    opacity: 1;
+    transform: translate(0, 0) rotate(-30deg);
+  }
+}
+
+.numero {
+  color: #ffffff;
+  font-size: 88px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.titulo {
+  margin: 34px 0 6px;
+  color: #ffffff;
+  font-size: 1.6rem;
+  font-weight: 700;
+}
+
+.ruta {
+  margin: 0;
+  color: #9fb3cf;
+  font-size: 1rem;
+  letter-spacing: 0.04em;
+}
+
+.pie {
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 12px 20px calc(20px + var(--ion-safe-area-bottom, 0px));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .avion-despegue {
+    animation: none;
+  }
+}

@@ -1,6 +1,7 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule, NgForm } from '@angular/forms';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import type { NgForm } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import {
   IonButton,
@@ -11,14 +12,13 @@ import {
   IonInputPasswordToggle,
   IonNote,
   IonText,
-  LoadingController,
-  MenuController,
 } from '@ionic/angular';
 import { addIcons } from 'ionicons';
-import { airplane, logInOutline, mailOutline, lockClosedOutline } from 'ionicons/icons';
-import { Credenciales } from '../../../models/usuario.model';
+import { lockClosedOutline, personOutline } from 'ionicons/icons';
+
 import { AuthService } from '../../../core/services/auth.service';
 import { MensajesService } from '../../../core/services/mensajes.service';
+import type { Credenciales } from '../../../models/usuario.model';
 
 @Component({
   selector: 'app-login',
@@ -40,26 +40,23 @@ import { MensajesService } from '../../../core/services/mensajes.service';
   ],
 })
 export class LoginPage {
-  // Datos enlazados con [(ngModel)]
+  private authService = inject(AuthService);
+  private mensajes = inject(MensajesService);
+  private router = inject(Router);
+
+  // Datos enlazados con ngModel
   credenciales: Credenciales = {
     email: '',
     password: '',
   };
   recordarCorreo = false;
 
-  constructor(
-    private authService: AuthService,
-    private mensajes: MensajesService,
-    private loadingController: LoadingController,
-    private menuController: MenuController,
-    private router: Router,
-  ) {
-    addIcons({ airplane, logInOutline, mailOutline, lockClosedOutline });
+  constructor() {
+    addIcons({ personOutline, lockClosedOutline });
   }
 
-  // Ciclo de vida de Ionic: se ejecuta cada vez que se va a mostrar la pagina
+  //ejecuta cada vez que se va a mostrar la pagina
   ionViewWillEnter(): void {
-    this.menuController.enable(false); // en el login no hay menu
     const correo = this.authService.obtenerCorreoRecordado();
     if (correo) {
       this.credenciales.email = correo;
@@ -67,31 +64,28 @@ export class LoginPage {
     }
   }
 
-  async iniciarSesion(formulario: NgForm): Promise<void> {
+  iniciarSesion(formulario: NgForm): void {
     if (formulario.invalid) {
-      this.mensajes.error('Revisa el correo y la contraseña');
+      this.mensajes.error('Escribe tu usuario y tu contraseña');
       return;
     }
 
-    const cargando = await this.loadingController.create({ message: 'Preparando la cabina...' });
-    await cargando.present();
+    const correcto = this.authService.login(this.credenciales);
+    if (!correcto) {
+      this.mensajes.error('Usuario o contraseña incorrectos');
+      return;
+    }
 
-    this.authService.login(this.credenciales).subscribe({
-      next: (sesion) => {
-        cargando.dismiss();
-        if (this.recordarCorreo) {
-          this.authService.guardarCorreoRecordado(this.credenciales.email);
-        } else {
-          this.authService.olvidarCorreo();
-        }
-        this.mensajes.exito('¡Bienvenido a bordo, ' + sesion.usuario.nombre + '!');
-        this.credenciales.password = '';
-        this.router.navigateByUrl('/tabs/inicio', { replaceUrl: true });
-      },
-      error: (err) => {
-        cargando.dismiss();
-        this.mensajes.error(this.mensajes.obtenerMensajeError(err));
-      },
-    });
+    if (this.recordarCorreo) {
+      this.authService.guardarCorreoRecordado(this.credenciales.email.trim());
+    } else {
+      this.authService.olvidarCorreo();
+    }
+
+    const usuario = this.authService.obtenerUsuario();
+    this.mensajes.exito('¡Bienvenido a bordo, ' + usuario?.username + '!'); //toast
+    this.credenciales.password = '';
+    this.router.navigateByUrl('/tabs/inicio', { replaceUrl: true });//reemplazando en true se entra a inicio
   }
+
 }

@@ -1,16 +1,15 @@
-// Respuesta (resumida) de la API publica Open-Meteo
-export interface RespuestaClima {
+// Lo que mostramos del clima en la pantalla de llegada
+export interface Clima {
+  temperatura: number; // en grados centigrados, ya redondeada
+  descripcion: string; // ej: "Nublado"
+  icono: string; // nombre del icono de ionicons
+}
+
+// Lo que responde Open-Meteo (solo los campos que usamos)
+export interface ClimaApi {
   current: {
     temperature_2m: number;
     weather_code: number;
-    wind_speed_10m: number;
+    is_day: number; // 1 = de dia, 0 = de noche
   };
-}
-
-// Lo que mostramos en el pase de abordar
-export interface Clima {
-  temperatura: number;
-  viento: number;
-  descripcion: string;
-  icono: string;
 }

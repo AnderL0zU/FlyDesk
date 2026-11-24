@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <title>Cerebro</title>
+  <g fill="none" stroke="currentColor" stroke-width="24" stroke-linecap="round" stroke-linejoin="round">
+    <!-- hemisferio izquierdo -->
+    <path d="M256 112c-14-30-48-46-80-38c-30 7-50 34-50 62c-28 8-46 36-42 66c-22 14-32 42-24 68c-14 22-12 52 6 70c4 34 34 60 68 58c14 26 44 38 72 30c22-6 40-24 50-46" />
+    <!-- hemisferio derecho -->
+    <path d="M256 112c14-30 48-46 80-38c30 7 50 34 50 62c28 8 46 36 42 66c22 14 32 42 24 68c14 22 12 52-6 70c-4 34-34 60-68 58c-14 26-44 38-72 30c-22-6-40-24-50-46" />
+    <!-- division central -->
+    <path d="M256 112v270" />
+    <!-- pliegues -->
+    <path d="M126 136c10 20 30 30 54 28" />
+    <path d="M84 202c18 4 34 18 40 38" />
+    <path d="M100 300c24-10 50-4 66 14" />
+    <path d="M150 362c6-22 26-36 50-36" />
+    <path d="M196 170c-4 22 8 40 30 46" />
+    <path d="M386 136c-10 20-30 30-54 28" />
+    <path d="M428 202c-18 4-34 18-40 38" />
+    <path d="M412 300c-24-10-50-4-66 14" />
+    <path d="M362 362c-6-22-26-36-50-36" />
+    <path d="M316 170c4 22-8 40-30 46" />
+  </g>
+</svg>

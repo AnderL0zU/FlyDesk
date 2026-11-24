@@ -1,0 +1,107 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar class="barra">
+    <ion-buttons slot="start">
+      <!-- El boton de atras solo aparece desde la segunda pantalla -->
+      <ion-button *ngIf="pasoActual > 0" class="boton-atras" (click)="anterior()" aria-label="Pantalla anterior">
+        <ion-icon slot="icon-only" name="arrow-back"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-buttons slot="end">
+      <ion-button *ngIf="!esUltimoPaso()" class="boton-omitir" fill="clear" color="medium" (click)="terminar()">Omitir</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" [scrollY]="false" (touchstart)="alTocar($event)" (touchend)="alSoltar($event)">
+  <!-- ngSwitch: muestra una escena distinta segun el tipo de paso -->
+  <div class="escena" [ngSwitch]="pasos[pasoActual].tipo">
+    <!-- 1. Foto del estudiante de fondo -->
+    <ng-container *ngSwitchCase="'foto-estudiante'">
+      <div class="foto-fondo">
+        <ion-img
+          *ngIf="tieneImagen(pasos[pasoActual])"
+          [src]="pasos[pasoActual].imagen"
+          alt="Estudiante distraído frente a sus cuadernos"
+          (ionError)="imagenFallo(pasos[pasoActual].imagen)"
+        ></ion-img>
+        <div class="respaldo" *ngIf="!tieneImagen(pasos[pasoActual])">
+          <ion-icon name="school-outline"></ion-icon>
+        </div>
+      </div>
+    </ng-container>
+
+    <!-- 2. Icono de cerebro -->
+    <ng-container *ngSwitchCase="'cerebro'">
+      <div class="zona-centro">
+        <div class="halo">
+          <ion-icon src="assets/icon/cerebro.svg" class="icono-cerebro" aria-hidden="true"></ion-icon>
+        </div>
+      </div>
+    </ng-container>
+
+    <!-- 3. Nubes desde la cabina (foto a pantalla completa) -->
+    <ng-container *ngSwitchCase="'nubes'">
+      <div class="foto-fondo">
+        <ion-img
+          *ngIf="tieneImagen(pasos[pasoActual])"
+          [src]="pasos[pasoActual].imagen"
+          alt="Nubes vistas desde un avión"
+          (ionError)="imagenFallo(pasos[pasoActual].imagen)"
+        ></ion-img>
+        <div class="respaldo" *ngIf="!tieneImagen(pasos[pasoActual])">
+          <ion-icon name="airplane"></ion-icon>
+        </div>
+      </div>
+    </ng-container>
+
+    <!-- 4. Cabina vacia -->
+    <ng-container *ngSwitchCase="'cabina'">
+      <div class="foto-fondo">
+        <ion-img
+          *ngIf="tieneImagen(pasos[pasoActual])"
+          [src]="pasos[pasoActual].imagen"
+          alt="Cabina de pasajeros vacía"
+          (ionError)="imagenFallo(pasos[pasoActual].imagen)"
+        ></ion-img>
+        <div class="respaldo" *ngIf="!tieneImagen(pasos[pasoActual])">
+          <ion-icon name="airplane"></ion-icon>
+        </div>
+      </div>
+    </ng-container>
+
+    <!-- 5. Globo 3D con un vuelo de ejemplo -->
+    <ng-container *ngSwitchCase="'globo'">
+      <div class="zona-globo">
+        <app-globo
+          [origen]="origenDemo"
+          [destino]="destinoDemo"
+          [progreso]="progresoDemo"
+          [altura]="430"
+        ></app-globo>
+      </div>
+    </ng-container>
+
+    <!-- 6. Pantalla final -->
+    <ng-container *ngSwitchCase="'final'">
+      <div class="zona-final">
+        <div class="pista">
+          <ion-icon name="airplane" class="avion-despegue" aria-hidden="true"></ion-icon>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+
+  <!-- Textos de la pantalla actual -->
+  <div class="textos" [class.textos-final]="esUltimoPaso()">
+    <h1>{{ pasos[pasoActual].titulo }}</h1>
+    <ion-text>
+      <p>{{ pasos[pasoActual].texto }}</p>
+    </ion-text>
+  </div>
+</ion-content>
+
+<ion-footer class="ion-no-border pie">
+  <ion-button expand="block" shape="round" class="boton-gradiente" (click)="siguiente()">
+    {{ esUltimoPaso() ? 'Abordar' : 'Continuar' }}
+  </ion-button>
+</ion-footer>

@@ -1,0 +1,200 @@
+.barra {
+  --background: transparent;
+  padding: 0 8px;
+}
+
+.boton-omitir {
+  text-transform: none;
+  font-weight: 600;
+}
+
+.boton-atras {
+  --background: rgba(255, 255, 255, 0.08);
+  --border-radius: 14px;
+  width: 44px;
+  height: 44px;
+}
+
+ion-content {
+  --background: var(--ion-background-color);
+}
+
+.escena {
+  position: absolute;
+  inset: 0;
+
+  animation: aparecer 0.35s ease-out;
+}
+
+@keyframes aparecer {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.foto-fondo {
+  position: absolute;
+  inset: 0;
+
+  ion-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  ion-img::part(image) {
+    object-fit: cover;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(11, 17, 30, 0.15) 0%, rgba(11, 17, 30, 0.35) 40%, #0b111e 78%);
+  }
+}
+
+.respaldo {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-bottom: 35%;
+  background: var(--fd-fondo-cielo);
+
+  ion-icon {
+    font-size: 140px;
+    color: rgba(96, 165, 250, 0.25);
+  }
+}
+
+.zona-centro {
+  position: absolute;
+  inset: 0 0 38% 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.halo {
+  width: 190px;
+  height: 190px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle, rgba(56, 189, 248, 0.22) 0%, rgba(56, 189, 248, 0) 70%);
+  border: 1px solid rgba(56, 189, 248, 0.25);
+}
+
+.icono-cerebro {
+  font-size: 110px;
+  color: var(--ion-color-primary);
+}
+
+.zona-globo {
+  position: absolute;
+  inset: 40px 0 auto 0;
+}
+
+.zona-final {
+  position: absolute;
+  inset: 0 0 18% 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pista {
+  position: relative;
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  background: radial-gradient(circle, rgba(56, 189, 248, 0.18) 0%, rgba(56, 189, 248, 0) 72%);
+}
+
+.avion-despegue {
+  font-size: 84px;
+  color: var(--ion-color-primary);
+
+  transform: rotate(-30deg);
+  animation: despegar 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes despegar {
+  from {
+    opacity: 0;
+    transform: translate(-40px, 30px) rotate(-10deg);
+  }
+  to {
+    opacity: 1;
+    transform: translate(0, 0) rotate(-30deg);
+  }
+}
+
+.textos {
+  position: absolute;
+  left: 0;
+  right: 0;
+
+  bottom: calc(24px + var(--offset-bottom, 0px));
+  padding: 0 28px;
+  text-align: center;
+  max-width: 520px;
+  margin: 0 auto;
+
+  h1 {
+    font-size: 1.85rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+    margin: 0 0 10px;
+  }
+
+  p {
+    font-size: 1rem;
+    line-height: 1.5;
+    color: var(--fd-niebla);
+    margin: 0;
+  }
+}
+
+.textos-final {
+  bottom: auto;
+  top: 58%;
+}
+
+.pie {
+  padding: 8px 24px calc(20px + var(--ion-safe-area-bottom, 0px));
+  background: var(--ion-background-color);
+}
+
+.boton-gradiente {
+  --background: var(--fd-degradado-boton);
+  --background-activated: var(--fd-degradado-boton);
+  --color: #0b111e;
+  --border-radius: 999px;
+  --box-shadow: 0 10px 30px rgba(56, 189, 248, 0.28);
+  height: 58px;
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .escena,
+  .avion-despegue {
+    animation: none;
+    transition: none;
+  }
+}

@@ -1,127 +1,68 @@
-<ion-header>
-  <ion-toolbar color="primary">
-    <ion-buttons slot="start">
-      <ion-menu-button></ion-menu-button>
-    </ion-buttons>
-    <ion-title>FlyDesk</ion-title>
-  </ion-toolbar>
-</ion-header>
+<ion-content [fullscreen]="true" [scrollY]="false" class="contenido-inicio">
+  <!-- Fotos de ciudades: todas apiladas, solo la activa es visible -->
+  <div
+    *ngFor="let imagen of imagenes; let i = index"
+    class="fondo"
+    [class.visible]="i === imagenActual"
+    [style.background-image]="'url(' + imagen + ')'"
+  ></div>
+  <div class="degradado"></div>
 
-<ion-content>
-  <!-- Deslizar hacia abajo para recargar -->
-  <ion-refresher slot="fixed" (ionRefresh)="cargarDatos($event)">
-    <ion-refresher-content pullingText="Desliza para actualizar" refreshingSpinner="crescent"></ion-refresher-content>
-  </ion-refresher>
+  <div class="parte-inferior">
+    <h1 class="titulo">¿Dónde empezará<br />tu viaje?</h1>
 
-  <!-- Saludo -->
-  <div class="saludo">
-    <h2>{{ obtenerSaludo() }}, {{ obtenerPrimerNombre() }} 👋</h2>
-    <p>¿A dónde vuela tu concentración hoy?</p>
+    <!-- hoja de busqueda (la peque;a minimizada)-->
+    <button class="buscador-falso" type="button" (click)="abrirBuscador()">
+      <ion-icon name="search-outline" aria-hidden="true"></ion-icon>
+      <span *ngIf="!aeropuertoElegido">Selecciona tu aeropuerto</span>
+      <span *ngIf="aeropuertoElegido" class="elegido">
+        {{ aeropuertoElegido.nombre }}({{ aeropuertoElegido.iata }})
+      </span>
+    </button>
   </div>
 
-  <!-- Vuelo en curso (solo si hay uno) -->
-  <ion-card *ngIf="vueloEnCurso" color="secondary" button (click)="continuarVuelo()">
-    <ion-card-header>
-      <ion-card-subtitle>Tienes un vuelo en curso</ion-card-subtitle>
-      <ion-card-title>
-        {{ vueloEnCurso.vuelo.origen.iata }} → {{ vueloEnCurso.vuelo.destino.iata }}
-      </ion-card-title>
-    </ion-card-header>
-    <ion-card-content>
-      Toca para volver a la cabina y seguir concentrándote.
-    </ion-card-content>
-  </ion-card>
+  <!-- Hoja que sube desde abajo con el buscador -->
+  <ion-modal
+    class="hoja-busqueda"
+    [isOpen]="buscadorAbierto"
+    [initialBreakpoint]="0.55"
+    [breakpoints]="[0, 0.55, 0.9]"
+    [handle]="true"
+    (didDismiss)="cerrarBuscador()"
+  >
+    <ng-template>
+      <ion-content class="contenido-hoja">
+        <ion-searchbar 
+          class="buscador"
+          placeholder="Código del aeropuerto (ej. BOG)"
+          [(ngModel)]="textoBusqueda"
+          (ionInput)="buscar()"
+          [debounce]="400"
+          autocapitalize="characters"
+          [maxlength]="3"
+        ></ion-searchbar> <!-- el debounce espera 400ms para dejar que el usuario termine de escribir completo-->
 
-  <!-- Meta diaria -->
-  <ion-card>
-    <ion-card-header>
-      <ion-card-subtitle>Meta de hoy</ion-card-subtitle>
-      <ion-card-title>
-        {{ estadisticas?.minutosHoy || 0 }} / {{ usuario?.ajustes?.metaDiariaMin }} min
-      </ion-card-title>
-    </ion-card-header>
-    <ion-card-content>
-      <ion-progress-bar
-        [value]="obtenerProgresoMeta()"
-        [color]="obtenerProgresoMeta() >= 1 ? 'success' : 'primary'"
-        [type]="cargando ? 'indeterminate' : 'determinate'"
-      ></ion-progress-bar>
-      <ion-text color="success" *ngIf="obtenerProgresoMeta() >= 1">
-        <p>🎉 ¡Cumpliste tu meta de hoy!</p>
-      </ion-text>
-    </ion-card-content>
-  </ion-card>
+        <ion-list class="lista-aeropuertos" *ngIf="!buscando"> <!-- Lista completa resultados-->
+          <ion-item *ngFor="let aeropuerto of resultados" button [detail]="false" (click)="elegir(aeropuerto)">
+            <div class="icono-avion" slot="start">
+              <ion-icon name="airplane" aria-hidden="true"></ion-icon>
+            </div>
+            <ion-label>{{ aeropuerto.nombre }}({{ aeropuerto.iata }})</ion-label>
+          </ion-item>
+        </ion-list>
 
-  <!-- Estadisticas en una cuadricula 2x2 -->
-  <ion-grid>
-    <ion-row>
-      <ion-col size="6">
-        <app-tarjeta-estadistica
-          icono="time-outline"
-          titulo="Horas de foco"
-          [valor]="obtenerHorasTotales()"
-          [cargando]="cargando"
-        ></app-tarjeta-estadistica>
-      </ion-col>
-      <ion-col size="6">
-        <app-tarjeta-estadistica
-          icono="airplane-outline"
-          titulo="Vuelos completados"
-          color="success"
-          [valor]="estadisticas?.completados || 0"
-          [cargando]="cargando"
-        ></app-tarjeta-estadistica>
-      </ion-col>
-      <ion-col size="6">
-        <app-tarjeta-estadistica
-          icono="navigate-outline"
-          titulo="Kilómetros"
-          color="tertiary"
-          [valor]="obtenerKilometros()"
-          [cargando]="cargando"
-        ></app-tarjeta-estadistica>
-      </ion-col>
-      <ion-col size="6">
-        <app-tarjeta-estadistica
-          icono="flame-outline"
-          titulo="Racha (días)"
-          color="danger"
-          [valor]="estadisticas?.rachaDias || 0"
-          [cargando]="cargando"
-        ></app-tarjeta-estadistica>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
+        <div class="cargando" *ngIf="buscando">
+          <ion-spinner name="crescent"></ion-spinner>
+        </div>
 
-  <!-- Ultimos vuelos -->
-  <ion-list inset="true">
-    <ion-list-header>
-      <ion-label>Últimos vuelos</ion-label>
-      <ion-button size="small" (click)="irAHistorial()">Ver todos</ion-button>
-    </ion-list-header>
+        <ion-text *ngIf="!buscando && textoBusqueda.trim().length < 2" class="sin-resultados">
+          <p>Escribe al menos 2 letras del código</p>
+        </ion-text>
 
-    <ion-item *ngFor="let reserva of ultimosVuelos">
-      <ion-avatar slot="start" class="avatar-estado" [class.desviado]="reserva.estado === 'desviado'">
-        <ion-icon [name]="reserva.estado === 'completado' ? 'checkmark-circle' : 'close-circle'"></ion-icon>
-      </ion-avatar>
-      <ion-label>
-        <h3>{{ reserva.vuelo.origen.ciudad }} → {{ reserva.vuelo.destino.ciudad }}</h3>
-        <p>{{ reserva.etiqueta }} · {{ reserva.fechaInicio | date: 'd MMM, h:mm a' }}</p>
-      </ion-label>
-      <ion-note slot="end">{{ reserva.minutosVolados | duracion }}</ion-note>
-    </ion-item>
-
-    <ion-item *ngIf="!cargando && ultimosVuelos.length === 0" lines="none">
-      <ion-label class="ion-text-wrap">
-        <p>Todavía no tienes vuelos. ¡Toca el botón ✈ para despegar tu primera sesión!</p>
-      </ion-label>
-    </ion-item>
-  </ion-list>
-
-  <!-- Boton flotante para ir a buscar vuelos -->
-  <ion-fab slot="fixed" vertical="bottom" horizontal="end">
-    <ion-fab-button color="secondary" (click)="irABuscar()">
-      <ion-icon name="airplane"></ion-icon>
-    </ion-fab-button>
-  </ion-fab>
+        <ion-text *ngIf="!buscando && textoBusqueda.trim().length >= 2 && resultados.length === 0" class="sin-resultados">
+          <p>No encontramos aeropuertos con "{{ textoBusqueda }}"</p>
+        </ion-text>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
 </ion-content>

@@ -1,14 +1,14 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import {
-  IonAccordion,
-  IonAccordionGroup,
   IonBadge,
   IonButton,
   IonButtons,
+  IonCard,
+  IonCardContent,
+  IonCol,
   IonContent,
+  IonGrid,
   IonHeader,
   IonIcon,
   IonItem,
@@ -17,48 +17,20 @@ import {
   IonItemSliding,
   IonLabel,
   IonList,
-  IonMenuButton,
-  IonModal,
   IonNote,
-  IonPopover,
-  IonRefresher,
-  IonRefresherContent,
-  IonSearchbar,
-  IonSegment,
-  IonSegmentButton,
-  IonSpinner,
+  IonRow,
   IonText,
-  IonThumbnail,
   IonTitle,
   IonToolbar,
-  RefresherCustomEvent,
 } from '@ionic/angular';
 import { addIcons } from 'ionicons';
-import {
-  airplane,
-  checkmarkCircle,
-  closeCircle,
-  filterOutline,
-  swapVerticalOutline,
-  trashOutline,
-} from 'ionicons/icons';
-import { EstadoReserva, Reserva } from '../../models/reserva.model';
-import { Usuario } from '../../models/usuario.model';
-import { AuthService } from '../../core/services/auth.service';
+import { airplane, timeOutline, trashOutline } from 'ionicons/icons';
+
+import { HistorialService } from '../../core/services/historial.service';
 import { MensajesService } from '../../core/services/mensajes.service';
-import { ReservasService } from '../../core/services/reservas.service';
-import { PaseAbordarComponent } from '../../shared/components/pase-abordar/pase-abordar.component';
-import { DuracionPipe } from '../../shared/pipes/duracion.pipe';
+import type { RegistroVuelo } from '../../models/vuelo.model';
 
-type FiltroEstado = 'todos' | EstadoReserva;
-type OrdenHistorial = 'recientes' | 'antiguos' | 'largos';
-
-// Vuelos agrupados por mes para el ion-accordion
-interface GrupoMes {
-  titulo: string; // ej: "noviembre 2026"
-  reservas: Reserva[];
-  minutos: number;
-}
+const MESES = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
 
 @Component({
   selector: 'app-historial',
@@ -67,192 +39,100 @@ interface GrupoMes {
   changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     CommonModule,
-    FormsModule,
     IonHeader,
     IonToolbar,
-    IonButtons,
-    IonMenuButton,
-    IonButton,
     IonTitle,
-    IonIcon,
-    IonPopover,
+    IonButtons,
+    IonButton,
     IonContent,
-    IonRefresher,
-    IonRefresherContent,
-    IonSegment,
-    IonSegmentButton,
-    IonLabel,
-    IonSearchbar,
-    IonAccordionGroup,
-    IonAccordion,
+    IonGrid,
+    IonRow,
+    IonCol,
+    IonCard,
+    IonCardContent,
     IonList,
-    IonItem,
     IonItemSliding,
+    IonItem,
     IonItemOptions,
     IonItemOption,
-    IonThumbnail,
-    IonBadge,
+    IonIcon,
+    IonLabel,
     IonNote,
+    IonBadge,
     IonText,
-    IonSpinner,
-    IonModal,
-    PaseAbordarComponent,
-    DuracionPipe,
   ],
 })
 export class HistorialPage {
-  usuario: Usuario | null = null;
-  reservas: Reserva[] = [];
-  grupos: GrupoMes[] = [];
-  gruposAbiertos: string[] = [];
+  private historialService = inject(HistorialService);
+  private mensajes = inject(MensajesService);
 
-  filtroEstado: FiltroEstado = 'todos';
-  orden: OrdenHistorial = 'recientes';
-  textoBusqueda = '';
-  cargando = true;
+  vuelos: RegistroVuelo[] = [];
 
-  // Para el modal de detalle
-  reservaDetalle: Reserva | null = null;
-  modalAbierto = false;
+  completados = 0;
+  abortados = 0;
+  minutosTotales = 0;
 
-  constructor(
-    private authService: AuthService,
-    private reservasService: ReservasService,
-    private mensajes: MensajesService,
-    private router: Router,
-  ) {
-    addIcons({ airplane, checkmarkCircle, closeCircle, trashOutline, swapVerticalOutline, filterOutline });
+  constructor() {
+    addIcons({ airplane, timeOutline, trashOutline });
   }
 
-  ionViewWillEnter(): void {
-    this.usuario = this.authService.obtenerUsuario();
-    this.cargarHistorial();
+  ionViewWillEnter(): void { // Se llama cada vez que se entra a la pestaña
+    this.cargar();
   }
 
-  cargarHistorial(evento?: RefresherCustomEvent): void {
-    if (!this.usuario) {
-      return;
-    }
-    this.reservasService.listar(this.usuario.id).subscribe({
-      next: (reservas) => {
-        this.reservas = reservas;
-        this.cargando = false;
-        this.aplicarFiltros();
-        if (evento) {
-          evento.target.complete();
-        }
-      },
-      error: (err) => {
-        this.cargando = false;
-        this.mensajes.error(this.mensajes.obtenerMensajeError(err));
-        if (evento) {
-          evento.target.complete();
-        }
-      },
-    });
-  }
+  private cargar(): void {
+    this.vuelos = this.historialService.obtenerTodos();
 
-  // Filtra, ordena y agrupa por mes
-  aplicarFiltros(): void {
-    const texto = this.textoBusqueda.trim().toLowerCase();
-
-    let lista = this.reservas.filter((r) => {
-      const cumpleEstado = this.filtroEstado === 'todos' || r.estado === this.filtroEstado;
-      const cumpleTexto =
-        texto === '' ||
-        r.vuelo.origen.ciudad.toLowerCase().includes(texto) ||
-        r.vuelo.destino.ciudad.toLowerCase().includes(texto) ||
-        r.etiqueta.toLowerCase().includes(texto);
-      return cumpleEstado && cumpleTexto;
-    });
-
-    if (this.orden === 'recientes') {
-      lista = lista.sort((a, b) => b.fechaInicio.localeCompare(a.fechaInicio));
-    } else if (this.orden === 'antiguos') {
-      lista = lista.sort((a, b) => a.fechaInicio.localeCompare(b.fechaInicio));
-    } else {
-      lista = lista.sort((a, b) => b.minutosVolados - a.minutosVolados);
-    }
-
-    // agrupamos por mes
-    const grupos: GrupoMes[] = [];
-    for (const reserva of lista) {
-      const fecha = new Date(reserva.fechaInicio);
-      const titulo = fecha.toLocaleDateString('es-CO', { month: 'long', year: 'numeric' });
-      let grupo = grupos.find((g) => g.titulo === titulo);
-      if (!grupo) {
-        grupo = { titulo: titulo, reservas: [], minutos: 0 };
-        grupos.push(grupo);
+    this.completados = 0;
+    this.abortados = 0;
+    this.minutosTotales = 0;
+    for (const vuelo of this.vuelos) {
+      if (vuelo.estado === 'completado') {
+        this.completados++;
+      } else {
+        this.abortados++;
       }
-      grupo.reservas.push(reserva);
-      grupo.minutos += reserva.minutosVolados;
+      this.minutosTotales = this.minutosTotales + vuelo.minutosVolados;
     }
-    this.grupos = grupos;
-    // todos los meses abiertos por defecto
-    this.gruposAbiertos = grupos.map((g) => g.titulo);
   }
 
-  cambiarOrden(nuevoOrden: OrdenHistorial): void {
-    this.orden = nuevoOrden;
-    this.aplicarFiltros();
+  async eliminar(vuelo: RegistroVuelo, deslizable: IonItemSliding): Promise<void> {
+    await deslizable.close();
+    this.historialService.eliminar(vuelo.id);
+    this.cargar();
+    this.mensajes.mostrarToast('Vuelo eliminado del historial');
   }
 
-  abrirDetalle(reserva: Reserva): void {
-    // si todavia esta volando lo llevamos a la cabina
-    if (reserva.estado === 'en-vuelo') {
-      this.router.navigate(['/vuelo', reserva.id]);
-      return;
-    }
-    this.reservaDetalle = reserva;
-    this.modalAbierto = true;
-  }
-
-  cerrarDetalle(): void {
-    this.modalAbierto = false;
-  }
-
-  async eliminar(reserva: Reserva, item: IonItemSliding): Promise<void> {
-    await item.close();
-
-    if (reserva.estado === 'en-vuelo') {
-      this.mensajes.error('No puedes borrar un vuelo que está en curso');
-      return;
-    }
-
-    const confirmo = await this.mensajes.confirmar(
-      'Eliminar vuelo',
-      '¿Borrar el vuelo ' + reserva.vuelo.origen.iata + ' → ' + reserva.vuelo.destino.iata + ' de tu historial?',
-      'Eliminar',
+  async borrarTodo(): Promise<void> {
+    const aceptar = await this.mensajes.confirmar(
+      'Borrar historial',
+      'Se eliminarán todos tus vuelos. Esta acción no se puede deshacer.',
+      'Borrar',
     );
-    if (!confirmo) {
+    if (!aceptar) {
       return;
     }
-
-    this.reservasService.eliminar(reserva.id).subscribe({
-      next: () => {
-        this.reservas = this.reservas.filter((r) => r.id !== reserva.id);
-        this.aplicarFiltros();
-        this.mensajes.exito('Vuelo eliminado del historial');
-      },
-      error: (err) => this.mensajes.error(this.mensajes.obtenerMensajeError(err)),
-    });
+    this.historialService.borrarTodo();
+    this.cargar();
   }
 
-  obtenerColorEstado(estado: EstadoReserva): string {
-    if (estado === 'completado') {
-      return 'success';
-    } else if (estado === 'desviado') {
-      return 'danger';
+  formatearDuracion(minutos: number): string {
+    const horas = Math.floor(minutos / 60);
+    const resto = minutos % 60;
+    if (horas === 0) {
+      return resto + 'min';
     }
-    return 'secondary';
+    if (resto === 0) {
+      return horas + 'h';
+    }
+    return horas + 'h ' + resto + 'min';
   }
 
-  obtenerTextoEstado(estado: EstadoReserva): string {
-    if (estado === 'completado') {
-      return 'Completado';
-    } else if (estado === 'desviado') {
-      return 'Desviado';
-    }
-    return 'En vuelo';
+  // 1763302980000 -> "16 nov · 14:23"
+  formatearFecha(fecha: number): string {
+    const dia = new Date(fecha);
+    const horas = dia.getHours() < 10 ? '0' + dia.getHours() : '' + dia.getHours();
+    const minutos = dia.getMinutes() < 10 ? '0' + dia.getMinutes() : '' + dia.getMinutes();
+    return dia.getDate() + ' ' + MESES[dia.getMonth()] + ' · ' + horas + ':' + minutos;
   }
 }

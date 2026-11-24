@@ -1,65 +1,64 @@
-<ion-content class="fondo-cielo" [fullscreen]="true">
-  <div class="contenedor">
-    <!-- Logo -->
-    <div class="logo">
-      <div class="logo-circulo">
-        <ion-icon name="airplane"></ion-icon>
-      </div>
-      <h1>FlyDesk</h1>
-      <p>Cada sesión de foco es un vuelo</p>
+<ion-content class="auth-contenido" [fullscreen]="true">
+  <div class="auth-contenedor">
+    <!-- Logo + nombre -->
+    <div class="auth-marca">
+      <img src="assets/img/Vector.svg" alt="" />
+      <span>flydesk</span>
     </div>
 
+    <h1 class="auth-titulo">Inicia sesión</h1>
+    <p class="auth-subtitulo">Retoma tus vuelos de concentración donde los dejaste.</p>
+
     <!-- Formulario con ngModel (template-driven form) -->
-    <form #formulario="ngForm" (ngSubmit)="iniciarSesion(formulario)" class="tarjeta-form">
+    <form #formulario="ngForm" (ngSubmit)="iniciarSesion(formulario)" novalidate>
       <ion-input
+        class="auth-campo"
         name="email"
-        type="email"
-        label="Correo electrónico"
+        label="Correo o usuario"
         labelPlacement="floating"
         fill="outline"
-        placeholder="tu@correo.com"
+        autocomplete="username"
         [(ngModel)]="credenciales.email"
         required
-        email
-        errorText="Escribe un correo válido"
+        errorText="Escribe tu correo o tu usuario"
       >
-        <ion-icon slot="start" name="mail-outline"></ion-icon>
+        <ion-icon slot="start" name="person-outline" aria-hidden="true"></ion-icon>
       </ion-input>
 
       <ion-input
+        class="auth-campo"
         name="password"
         type="password"
         label="Contraseña"
         labelPlacement="floating"
         fill="outline"
+        autocomplete="current-password"
         [(ngModel)]="credenciales.password"
         required
-        minlength="6"
-        errorText="Mínimo 6 caracteres"
+        errorText="Escribe tu contraseña"
       >
-        <ion-icon slot="start" name="lock-closed-outline"></ion-icon>
+        <ion-icon slot="start" name="lock-closed-outline" aria-hidden="true"></ion-icon>
         <ion-input-password-toggle slot="end"></ion-input-password-toggle>
       </ion-input>
 
-      <ion-checkbox name="recordar" [(ngModel)]="recordarCorreo" labelPlacement="end">
-        Recordar mi correo
-      </ion-checkbox>
+      <div class="opciones">
+        <ion-checkbox name="recordar" [(ngModel)]="recordarCorreo" labelPlacement="end">
+          Recordarme
+        </ion-checkbox>
+      </div>
 
-      <ion-button type="submit" expand="block" shape="round" [disabled]="formulario.invalid">
-        <ion-icon slot="start" name="log-in-outline"></ion-icon>
+      <ion-button type="submit" expand="block" class="auth-boton" [disabled]="formulario.invalid">
         Iniciar sesión
       </ion-button>
     </form>
 
-    <ion-text class="ion-text-center">
-      <p>
+    <ion-text>
+      <p class="auth-pie">
         ¿No tienes cuenta?
-        <a routerLink="/registro">Regístrate aquí</a>
+        <a routerLink="/registro">Crear cuenta</a>
       </p>
     </ion-text>
 
-    <ion-note class="ion-text-center nota-demo">
-      Cuenta de prueba: demo&#64;flydesk.com / 123456
-    </ion-note>
+    <ion-note class="nota-demo">Cuenta de prueba: demo&#64;flydesk.com / 123456</ion-note>
   </div>
 </ion-content>

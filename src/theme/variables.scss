@@ -1,32 +1,73 @@
-// Colores de FlyDesk
-// Documentacion: https://ionicframework.com/docs/theming/colors
+:root,
+:root.md,
+:root.ios {
+  --ion-font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
 
-:root {
-  // Azul "cabina" (color principal)
-  --ion-color-primary: #3b5bdb;
-  --ion-color-primary-rgb: 59, 91, 219;
-  --ion-color-primary-contrast: #ffffff;
-  --ion-color-primary-contrast-rgb: 255, 255, 255;
-  --ion-color-primary-shade: #3450c1;
-  --ion-color-primary-tint: #4f6bdf;
+  --ion-background-color: #0b111e;
+  --ion-background-color-rgb: 11, 17, 30;
+  --ion-text-color: #eef3fb;
+  --ion-text-color-rgb: 238, 243, 251;
 
-  // Ambar "pase de abordar"
-  --ion-color-secondary: #f59f00;
-  --ion-color-secondary-rgb: 245, 159, 0;
-  --ion-color-secondary-contrast: #000000;
-  --ion-color-secondary-contrast-rgb: 0, 0, 0;
-  --ion-color-secondary-shade: #d88c00;
-  --ion-color-secondary-tint: #f6a91a;
+  --ion-card-background: #141b2b;
+  --ion-item-background: #141b2b;
+  --ion-toolbar-background: #0b111e;
+  --ion-tab-bar-background: #141b2b;
+  --ion-tab-bar-border-color: #1e2738;
+  --ion-border-color: #1e2738;
 
-  // Violeta para detalles
-  --ion-color-tertiary: #7048e8;
-  --ion-color-tertiary-rgb: 112, 72, 232;
+  --ion-color-step-50: #141b2b;
+  --ion-color-step-100: #1b2333;
+  --ion-color-step-150: #222b3c;
+  --ion-color-step-200: #2a3445;
+  --ion-color-step-250: #333d4f;
+  --ion-color-step-300: #3d4759;
+  --ion-color-step-350: #475164;
+  --ion-color-step-400: #525c6f;
+  --ion-color-step-450: #5d677a;
+  --ion-color-step-500: #697386;
+  --ion-color-step-550: #757f92;
+  --ion-color-step-600: #828b9e;
+  --ion-color-step-650: #8f98aa;
+  --ion-color-step-700: #9ca5b6;
+  --ion-color-step-750: #aab2c2;
+  --ion-color-step-800: #b8c0ce;
+  --ion-color-step-850: #c6cdd9;
+  --ion-color-step-900: #d5dbe4;
+  --ion-color-step-950: #e3e8ef;
+
+  --ion-color-primary: #38bdf8;
+  --ion-color-primary-rgb: 56, 189, 248;
+  --ion-color-primary-contrast: #0b111e;
+  --ion-color-primary-contrast-rgb: 11, 17, 30;
+  --ion-color-primary-shade: #31a6da;
+  --ion-color-primary-tint: #4cc4f9;
+
+  --ion-color-secondary: #60a5fa;
+  --ion-color-secondary-rgb: 96, 165, 250;
+  --ion-color-secondary-contrast: #0b111e;
+  --ion-color-secondary-contrast-rgb: 11, 17, 30;
+  --ion-color-secondary-shade: #5491dc;
+  --ion-color-secondary-tint: #70aefb;
+
+  --ion-color-tertiary: #0284c7;
+  --ion-color-tertiary-rgb: 2, 132, 199;
   --ion-color-tertiary-contrast: #ffffff;
   --ion-color-tertiary-contrast-rgb: 255, 255, 255;
-  --ion-color-tertiary-shade: #633fcc;
-  --ion-color-tertiary-tint: #7e5aea;
+  --ion-color-tertiary-shade: #0274af;
+  --ion-color-tertiary-tint: #1b90cd;
 
-  // Colores propios de la app
-  --fd-fondo-cielo: linear-gradient(160deg, #0b1437 0%, #1b2a6b 55%, #3b5bdb 100%);
-  --fd-borde-suave: rgba(var(--ion-color-primary-rgb), 0.15);
+  --ion-color-light: #1b2333;
+  --ion-color-light-rgb: 27, 35, 51;
+  --ion-color-light-contrast: #eef3fb;
+  --ion-color-light-contrast-rgb: 238, 243, 251;
+  --ion-color-light-shade: #182030;
+  --ion-color-light-tint: #323947;
+
+  --ion-color-medium: #8f98aa;
+  --ion-color-medium-rgb: 143, 152, 170;
+
+  --fd-niebla: #c9d3e3;
+  --fd-fondo-cielo: radial-gradient(120% 80% at 50% 0%, #12325a 0%, #0b111e 70%);
+  --fd-degradado-boton: linear-gradient(100deg, #38bdf8 0%, #60a5fa 55%, #0284c7 100%);
+  --fd-borde-suave: rgba(96, 165, 250, 0.16);
 }

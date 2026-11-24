@@ -1,22 +1,13 @@
-// Preferencias que el usuario cambia en la pantalla de perfil
-export interface AjustesUsuario {
-  modoEstricto: boolean; // si sale de la app el vuelo se desvia
-  notificaciones: boolean;
-  vibracion: boolean;
-  metaDiariaMin: number; // minutos de foco que quiere hacer al dia
-}
-
 export interface Usuario {
   id: string;
-  nombre: string;
+  username: string;
+  edad: number;
   email: string;
   password: string; // OJO: solo porque el login es simulado
-  aeropuertoBase: string | null; // codigo IATA
   fechaRegistro: string;
-  ajustes: AjustesUsuario;
 }
 
-// Lo que se manda al hacer login
+// Lo que se manda al hacer login (se puede entrar con correo o con username)
 export interface Credenciales {
   email: string;
   password: string;
@@ -24,8 +15,9 @@ export interface Credenciales {
 
 // Lo que se manda al registrarse
 export interface DatosRegistro {
-  nombre: string;
+  username: string;
   email: string;
+  edad: number | null;
   password: string;
 }
 

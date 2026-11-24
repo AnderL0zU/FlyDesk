@@ -1,4 +1,5 @@
 import type { Routes } from '@angular/router';
+
 import { authGuard, invitadoGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
@@ -7,10 +8,14 @@ export const routes: Routes = [
     redirectTo: 'tabs/inicio',
     pathMatch: 'full',
   },
-  // ---- Paginas publicas ----
+
+  {
+    path: 'bienvenida',
+    loadComponent: () => import('./pages/bienvenida/bienvenida.page').then((m) => m.BienvenidaPage),
+  },
   {
     path: 'login',
-    canActivate: [invitadoGuard],
+    canActivate: [invitadoGuard], //pone invitado
     loadComponent: () => import('./pages/auth/login/login.page').then((m) => m.LoginPage),
   },
   {
@@ -18,7 +23,9 @@ export const routes: Routes = [
     canActivate: [invitadoGuard],
     loadComponent: () => import('./pages/auth/registro/registro.page').then((m) => m.RegistroPage),
   },
-  // ---- Paginas con sesion iniciada ----
+
+  
+  // Paginas con sesion iniciada
   {
     path: 'tabs',
     canActivate: [authGuard],
@@ -29,16 +36,12 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/inicio/inicio.page').then((m) => m.InicioPage),
       },
       {
-        path: 'buscar',
-        loadComponent: () => import('./pages/buscar/buscar.page').then((m) => m.BuscarPage),
-      },
-      {
         path: 'historial',
         loadComponent: () => import('./pages/historial/historial.page').then((m) => m.HistorialPage),
       },
       {
-        path: 'perfil',
-        loadComponent: () => import('./pages/perfil/perfil.page').then((m) => m.PerfilPage),
+        path: 'ajustes',
+        loadComponent: () => import('./pages/ajustes/ajustes.page').then((m) => m.AjustesPage),
       },
       {
         path: '',
@@ -48,14 +51,24 @@ export const routes: Routes = [
     ],
   },
   {
-    path: 'vuelo/:id',
+    path: 'reservar/:iata', //iata es el codigo que recibe del usuario del aeropuerto origen
     canActivate: [authGuard],
-    loadComponent: () => import('./pages/vuelo-en-curso/vuelo-en-curso.page').then((m) => m.VueloEnCursoPage),
+    loadComponent: () => import('./pages/reservar/reservar.page').then((m) => m.ReservarPage),
   },
   {
-    path: 'aterrizaje/:id',
+    path: 'despegue/:origen/:destino/:minutos',
     canActivate: [authGuard],
-    loadComponent: () => import('./pages/aterrizaje/aterrizaje.page').then((m) => m.AterrizajePage),
+    loadComponent: () => import('./pages/despegue/despegue.page').then((m) => m.DespeguePage),
+  },
+  {
+    path: 'vuelo',
+    canActivate: [authGuard],
+    loadComponent: () => import('./pages/vuelo/vuelo.page').then((m) => m.VueloPage),
+  },
+  {
+    path: 'llegada',
+    canActivate: [authGuard],
+    loadComponent: () => import('./pages/llegada/llegada.page').then((m) => m.LlegadaPage),
   },
   {
     path: '**',

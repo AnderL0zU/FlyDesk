@@ -1,56 +1,70 @@
-import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { Observable, of, tap } from 'rxjs';
-import { Aeropuerto } from '../../models/aeropuerto.model';
-import { calcularDistanciaKm } from '../utils/geo.util';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Injectable, inject } from '@angular/core';
+import type { Observable } from 'rxjs';
+import { forkJoin, map } from 'rxjs';
 
+import { environment } from '../../../environments/environment';
+import type { Aeropuerto, AeropuertoApi } from '../../models/aeropuerto.model';
+
+// Busca aeropuertos en la API
 @Injectable({
   providedIn: 'root',
 })
 export class AeropuertosService {
-  // guardamos la lista para no pedirla cada vez
-  private aeropuertos: Aeropuerto[] = [];
+  private http = inject(HttpClient);
 
-  constructor(private http: HttpClient) {}
+  private urlApi = 'https://api.api-ninjas.com/v1/airports';
 
-  obtenerAeropuertos(): Observable<Aeropuerto[]> {
-    if (this.aeropuertos.length > 0) {
-      return of(this.aeropuertos);
-    }
-    return this.http.get<Aeropuerto[]>('/api/aeropuertos').pipe(tap((lista) => (this.aeropuertos = lista)));
+  // peticion 1: busca por codigo IATA
+  buscarPorCodigo(codigo: string): Observable<Aeropuerto[]> {
+    return this.pedir('iata=' + encodeURIComponent(codigo) + '&has_iata=true&limit=20');
+  } //llama a la funcion pedir que es la que hace la peticion http
+
+  // peticion 2: aeropuertos a donde se puede volar desde el origen:
+  buscarDestinos(origen: Aeropuerto): Observable<Aeropuerto[]> {
+    const delPais = this.pedir(
+      'country=' + origen.codigoPais + '&has_iata=true&scheduled_service=true&limit=100',
+    );
+    const delContinente = this.pedir('continent=' + origen.continente + '&type=large_airport&limit=100');
+
+    
+    // forkJoin espera a que terminen las dos peticiones
+    return forkJoin([delPais, delContinente]).pipe(
+      map((respuestas) => {
+        const todos = respuestas[0].concat(respuestas[1]); //se une la busqueda por pais y continent
+        const resultado: Aeropuerto[] = [];
+        for (const aeropuerto of todos) {
+          // quita el origen y los repetidos
+          const repetido = resultado.find((a) => a.iata === aeropuerto.iata);
+          if (aeropuerto.iata !== origen.iata && !repetido) { //es como el trycatch para evitar poner el origen o repetidos
+            resultado.push(aeropuerto);
+          }
+        }
+        return resultado;
+      }),
+    );
   }
 
-  buscarPorCodigo(iata: string): Aeropuerto | undefined {
-    return this.aeropuertos.find((a) => a.iata === iata);
+  // Peticion http
+  private pedir(parametros: string): Observable<Aeropuerto[]> {
+    const headers = new HttpHeaders({ 'X-Api-Key': environment.apiNinjasKey }); //llave
+    return this.http
+      .get<AeropuertoApi[]>(this.urlApi + '?' + parametros, { headers: headers }) //get parametros
+      .pipe(map((lista) => lista.map((item) => this.convertir(item))));           //convierte al modelo 
   }
 
-  // Lista de continentes sin repetir (para los filtros)
-  obtenerContinentes(): string[] {
-    const continentes: string[] = [];
-    for (const a of this.aeropuertos) {
-      if (!continentes.includes(a.continente)) {
-        continentes.push(a.continente);
-      }
-    }
-    return continentes.sort();
-  }
+  //se hace esto (usa 2 modelos de interface) para hacer que si se cambia de API sea mas simple
 
-  // Recorre todos los aeropuertos y devuelve el que este mas cerca
-  buscarMasCercano(lat: number, lng: number): { aeropuerto: Aeropuerto; distanciaKm: number } | null {
-    let masCercano: Aeropuerto | null = null;
-    let menorDistancia = Number.MAX_VALUE;
-
-    for (const a of this.aeropuertos) {
-      const distancia = calcularDistanciaKm(lat, lng, a.lat, a.lng);
-      if (distancia < menorDistancia) {
-        menorDistancia = distancia;
-        masCercano = a;
-      }
-    }
-
-    if (masCercano === null) {
-      return null;
-    }
-    return { aeropuerto: masCercano, distanciaKm: menorDistancia };
+  private convertir(item: AeropuertoApi): Aeropuerto { //convierte al numero modelo de interface
+    return {
+      iata: item.iata,
+      nombre: item.name,
+      ciudad: item.city,
+      pais: item.country_name,
+      codigoPais: item.country,
+      continente: item.continent,
+      lat: item.latitude,
+      lng: item.longitude,
+    };
   }
 }

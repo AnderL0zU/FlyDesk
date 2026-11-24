@@ -1,87 +1,109 @@
-<ion-header>
-  <ion-toolbar color="primary">
+<ion-header class="ion-no-border">
+  <ion-toolbar class="barra">
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/login" text="Atrás"></ion-back-button>
+      <ion-back-button defaultHref="/login" text="" class="boton-atras"></ion-back-button>
     </ion-buttons>
-    <ion-title>Crear cuenta</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding">
-  <ion-text color="medium">
-    <p>Crea tu "pasaporte" de FlyDesk para guardar tus vuelos de concentración.</p>
-  </ion-text>
+<ion-content class="auth-contenido">
+  <div class="auth-contenedor">
+    <div class="auth-marca">
+      <img src="assets/img/Vector.svg" alt="" />
+      <span>flydesk</span>
+    </div>
 
-  <form #formulario="ngForm" (ngSubmit)="registrarse(formulario)" class="formulario">
-    <ion-input
-      name="nombre"
-      label="Nombre completo"
-      labelPlacement="floating"
-      fill="outline"
-      [(ngModel)]="datos.nombre"
-      required
-      minlength="3"
-      [counter]="true"
-      maxlength="40"
-      errorText="Escribe tu nombre (mínimo 3 letras)"
-    ></ion-input>
+    <h1 class="auth-titulo">Crea tu cuenta</h1>
+    <p class="auth-subtitulo">Tu pasaporte para guardar cada vuelo de concentración.</p>
 
-    <ion-input
-      name="email"
-      type="email"
-      label="Correo electrónico"
-      labelPlacement="floating"
-      fill="outline"
-      [(ngModel)]="datos.email"
-      required
-      email
-      errorText="Correo no válido"
-    ></ion-input>
+    <form (ngSubmit)="crearCuenta()" novalidate>
+      <!-- Username -->
+      <ion-input
+        class="auth-campo"
+        [class.campo-invalido]="mostrarError('username')"
+        name="username"
+        label="Nombre de usuario"
+        labelPlacement="floating"
+        fill="outline"
+        autocomplete="username"
+        autocapitalize="off"
+        [(ngModel)]="datos.username"
+        (ionBlur)="marcarTocado('username')"
+        [counter]="true"
+        maxlength="20"
+      >
+        <ion-icon slot="start" name="person-outline" aria-hidden="true"></ion-icon>
+      </ion-input>
+      <ion-text color="danger" class="auth-error" *ngIf="mostrarError('username')">
+        {{ mostrarError('username') }}
+      </ion-text>
 
-    <ion-input
-      name="password"
-      type="password"
-      label="Contraseña"
-      labelPlacement="floating"
-      fill="outline"
-      helperText="Mínimo 6 caracteres"
-      [(ngModel)]="datos.password"
-      required
-      minlength="6"
-      errorText="Mínimo 6 caracteres"
-    >
-      <ion-input-password-toggle slot="end"></ion-input-password-toggle>
-    </ion-input>
+      <!-- Email -->
+      <ion-input
+        class="auth-campo"
+        [class.campo-invalido]="mostrarError('email')"
+        name="email"
+        type="email"
+        inputmode="email"
+        label="Correo electrónico"
+        labelPlacement="floating"
+        fill="outline"
+        autocomplete="email"
+        [(ngModel)]="datos.email"
+        (ionBlur)="marcarTocado('email')"
+      >
+        <ion-icon slot="start" name="at-outline" aria-hidden="true"></ion-icon>
+      </ion-input>
+      <ion-text color="danger" class="auth-error" *ngIf="mostrarError('email')">
+        {{ mostrarError('email') }}
+      </ion-text>
 
-    <ion-input
-      name="confirmar"
-      type="password"
-      label="Confirmar contraseña"
-      labelPlacement="floating"
-      fill="outline"
-      [(ngModel)]="confirmarPassword"
-      required
-    >
-      <ion-input-password-toggle slot="end"></ion-input-password-toggle>
-    </ion-input>
+      <!-- Edad -->
+      <ion-input
+        class="auth-campo"
+        [class.campo-invalido]="mostrarError('edad')"
+        name="edad"
+        type="number"
+        inputmode="numeric"
+        label="Edad"
+        labelPlacement="floating"
+        fill="outline"
+        min="13"
+        max="100"
+        [(ngModel)]="datos.edad"
+        (ionBlur)="marcarTocado('edad')"
+      >
+        <ion-icon slot="start" name="calendar-outline" aria-hidden="true"></ion-icon>
+      </ion-input>
+      <ion-text color="danger" class="auth-error" *ngIf="mostrarError('edad')">
+        {{ mostrarError('edad') }}
+      </ion-text>
 
-    <!-- ngIf: solo aparece si las contraseñas no son iguales -->
-    <ion-text color="danger" *ngIf="confirmarPassword.length > 0 && !passwordsCoinciden()">
-      <small>Las contraseñas no coinciden</small>
+      <!-- Contraseña -->
+      <ion-input
+        class="auth-campo"
+        [class.campo-invalido]="mostrarError('password')"
+        name="password"
+        type="password"
+        label="Contraseña"
+        labelPlacement="floating"
+        fill="outline"
+        autocomplete="new-password"
+        [(ngModel)]="datos.password"
+        (ionBlur)="marcarTocado('password')"
+      >
+        <ion-icon slot="start" name="lock-closed-outline" aria-hidden="true"></ion-icon>
+        <ion-input-password-toggle slot="end"></ion-input-password-toggle>
+      </ion-input>
+
+      <ion-button type="submit" expand="block" class="auth-boton">Crear cuenta</ion-button>
+    </form>
+
+    <ion-text>
+      <p class="auth-pie">
+        ¿Ya tienes cuenta?
+        <a routerLink="/login">Inicia sesión</a>
+      </p>
     </ion-text>
-
-    <ion-checkbox name="terminos" [(ngModel)]="aceptaTerminos" labelPlacement="end" justify="start">
-      Acepto que mis datos se guarden en este celular
-    </ion-checkbox>
-
-    <ion-button
-      type="submit"
-      expand="block"
-      shape="round"
-      [disabled]="formulario.invalid || !passwordsCoinciden() || !aceptaTerminos"
-    >
-      <ion-icon slot="start" name="person-add-outline"></ion-icon>
-      Registrarme
-    </ion-button>
-  </form>
+  </div>
 </ion-content>

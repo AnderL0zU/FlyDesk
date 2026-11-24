@@ -1,0 +1,76 @@
+<ion-header class="ion-no-border cabecera">
+  <ion-toolbar class="barra">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/tabs/inicio" text="" class="boton-atras"></ion-back-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="contenido-reservar">
+  <!-- Globo 3D: muestra el origen y la ruta al destino elegido -->
+  <app-globo
+    *ngIf="origen"
+    [origen]="origen"
+    [destino]="obtenerVueloElegido()?.destino || null"
+    [altura]="alturaGlobo"
+  ></app-globo>
+  <div *ngIf="!origen" class="globo-vacio" [style.height.px]="alturaGlobo"></div>
+
+  <div class="panel">
+    <p class="desde" *ngIf="origen">
+      Desde <strong>{{ origen.ciudad }} ({{ origen.iata }})</strong>
+    </p>
+
+    <!-- Duracion -->
+    <h2 class="subtitulo">Duración</h2>
+    <ion-segment
+      class="duraciones"
+      [(ngModel)]="duracionElegida"
+      (ionChange)="filtrar()"
+    >
+      <ion-segment-button *ngFor="let minutos of duraciones" [value]="minutos">
+        <ion-label>{{ formatearDuracion(minutos) }}</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+
+    <!-- Destinos -->
+    <h2 class="subtitulo">
+      Destinos
+      <span *ngIf="!cargando">({{ vuelosFiltrados.length }})</span>
+    </h2>
+
+    <!-- Filas grises mientras carga -->
+    <ion-list *ngIf="cargando" class="lista-destinos">
+      <ion-item *ngFor="let fila of esqueletos" lines="none">
+        <ion-skeleton-text [animated]="true" class="esqueleto"></ion-skeleton-text>
+      </ion-item>
+    </ion-list>
+
+    <ion-list *ngIf="!cargando && vuelosFiltrados.length > 0" class="lista-destinos">
+      <ion-radio-group [(ngModel)]="codigoDestino">
+        <ion-item *ngFor="let vuelo of vuelosFiltrados" lines="none" [class.elegido]="vuelo.destino.iata === codigoDestino">
+          <div class="icono-avion" slot="start">
+            <ion-icon name="airplane" aria-hidden="true"></ion-icon>
+          </div>
+          <ion-radio [value]="vuelo.destino.iata" justify="space-between">
+            <ion-label>
+              <h3>{{ vuelo.destino.nombre }}({{ vuelo.destino.iata }})</h3>
+              <ion-note>{{ vuelo.destino.ciudad }} · {{ formatearDuracion(vuelo.duracionMin) }}</ion-note>
+            </ion-label>
+          </ion-radio>
+        </ion-item>
+      </ion-radio-group>
+    </ion-list>
+
+    <ion-text *ngIf="!cargando && vuelosFiltrados.length === 0" class="sin-destinos">
+      <p>No hay destinos de {{ formatearDuracion(duracionElegida) }} desde aquí. Prueba otra duración.</p>
+    </ion-text>
+  </div>
+
+  <!-- Boton fijo abajo -->
+  <div class="pie" slot="fixed">
+    <ion-button expand="block" class="auth-boton boton-despegar" [disabled]="!codigoDestino" (click)="despegar()">
+      Despegar
+    </ion-button>
+  </div>
+</ion-content>

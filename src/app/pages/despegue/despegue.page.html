@@ -1,0 +1,30 @@
+<ion-header class="ion-no-border cabecera">
+  <ion-toolbar class="barra">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/tabs/inicio" text="" class="boton-atras"></ion-back-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="contenido-despegue">
+  <div class="centro">
+    <!-- Antes de la cuenta: el avion despegando -->
+    <div class="pista" *ngIf="!contando">
+      <ion-icon name="airplane" class="avion-despegue" aria-hidden="true"></ion-icon>
+    </div>
+
+    <!-- Durante la cuenta: el numero grande -->
+    <div class="pista" *ngIf="contando">
+      <span class="numero" [attr.aria-label]="'Despegue en ' + cuenta">{{ cuenta }}</span>
+    </div>
+
+    <h1 class="titulo">Listo para despegar</h1>
+    <p class="ruta" *ngIf="origen && destino">{{ origen }} → {{ destino }}</p>
+  </div>
+
+  <div class="pie" slot="fixed">
+    <ion-button expand="block" class="auth-boton" [disabled]="contando" (click)="iniciarVuelo()">
+      Iniciar vuelo
+    </ion-button>
+  </div>
+</ion-content>

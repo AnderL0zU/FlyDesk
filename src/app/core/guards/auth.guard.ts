@@ -1,6 +1,9 @@
 import { inject } from '@angular/core';
-import { CanActivateFn, Router } from '@angular/router';
+import type { CanActivateFn} from '@angular/router';
+import { Router } from '@angular/router';
+
 import { AuthService } from '../services/auth.service';
+import { StorageService } from '../services/storage.service';
 
 // Solo deja entrar si el usuario inicio sesion
 export const authGuard: CanActivateFn = () => {
@@ -13,13 +16,17 @@ export const authGuard: CanActivateFn = () => {
   return router.createUrlTree(['/login']);
 };
 
-// Lo contrario: si ya inicio sesion no tiene sentido ver el login
+
 export const invitadoGuard: CanActivateFn = () => {
   const authService = inject(AuthService);
+  const storage = inject(StorageService);
   const router = inject(Router);
 
-  if (!authService.estaLogueado()) {
-    return true;
+  if (authService.estaLogueado()) {
+    return router.createUrlTree(['/tabs/inicio']);
   }
-  return router.createUrlTree(['/tabs/inicio']);
+  if (!storage.leer<boolean>('bienvenida_vista', false)) {
+    return router.createUrlTree(['/bienvenida']);
+  }
+  return true;
 };

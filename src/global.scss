@@ -1,44 +1,18 @@
-/*
- * App Global CSS
- * ----------------------------------------------------------------------------
- * Put style rules here that you want to apply globally. These styles are for
- * the entire app and not just one component. Additionally, this file can be
- * used as an entry point to import other CSS/Sass files to be included in the
- * output CSS.
- * For more information on global stylesheets, visit the documentation:
- * https://ionicframework.com/docs/layout/global-stylesheets
- */
-
-/* Core CSS required for Ionic components to work properly */
 @import "@ionic/angular/css/core.css";
 
-/* Basic CSS for apps built with Ionic */
 @import "@ionic/angular/css/normalize.css";
 @import "@ionic/angular/css/structure.css";
 @import "@ionic/angular/css/typography.css";
 @import "@ionic/angular/css/display.css";
 
-/* Optional CSS utils that can be commented out */
 @import "@ionic/angular/css/padding.css";
 @import "@ionic/angular/css/float-elements.css";
 @import "@ionic/angular/css/text-alignment.css";
 @import "@ionic/angular/css/text-transformation.css";
 @import "@ionic/angular/css/flex-utils.css";
 
-/**
- * Ionic Dark Mode
- * -----------------------------------------------------
- * For more info, please see:
- * https://ionicframework.com/docs/theming/dark-mode
- */
+@import '@ionic/angular/css/palettes/dark.always.css';
 
-/* @import "@ionic/angular/css/palettes/dark.always.css"; */
-/* @import "@ionic/angular/css/palettes/dark.class.css"; */
-@import '@ionic/angular/css/palettes/dark.system.css';
-
-/* ---------------- Estilos globales de FlyDesk ---------------- */
-
-/* Codigo IATA grande (BOG, MDE...) usado en varias pantallas */
 .codigo-iata {
   font-size: 1.9rem;
   font-weight: 800;
@@ -51,13 +25,94 @@
   color: var(--ion-color-medium);
 }
 
-/* Fondo oscuro tipo cielo nocturno (login, vuelo en curso) */
 .fondo-cielo {
   --background: var(--fd-fondo-cielo);
   color: #ffffff;
 }
 
-/* Las tarjetas se ven un poco mas redondeadas */
 ion-card {
   border-radius: 16px;
+}
+
+.auth-contenido {
+  --background: var(--ion-background-color);
+}
+
+.auth-contenedor {
+  max-width: 420px;
+  margin: 0 auto;
+  padding: 24px 24px 32px;
+}
+
+.auth-marca {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 8px 0 40px;
+
+  img {
+    height: 34px;
+    width: auto;
+    filter: drop-shadow(0 0 10px rgba(56, 189, 248, 0.45));
+  }
+
+  span {
+    font-size: 1.6rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+  }
+}
+
+.auth-titulo {
+  font-size: 1.75rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin: 0 0 6px;
+}
+
+.auth-subtitulo {
+  color: var(--fd-niebla);
+  margin: 0 0 28px;
+  line-height: 1.5;
+}
+
+.auth-campo {
+  --background: #141b2b;
+  --border-color: #273145;
+  --border-radius: 14px;
+  --highlight-color-focused: var(--ion-color-primary);
+  --placeholder-color: #697386;
+  margin-top: 14px;
+}
+
+.auth-error {
+  display: block;
+  font-size: 0.8rem;
+  margin: 6px 4px 0;
+}
+
+.auth-boton {
+  --background: var(--fd-degradado-boton);
+  --background-activated: var(--fd-degradado-boton);
+  --color: #0b111e;
+  --border-radius: 999px;
+  --box-shadow: 0 10px 28px rgba(56, 189, 248, 0.25);
+  height: 54px;
+  margin-top: 26px;
+  font-weight: 700;
+  font-size: 1rem;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.auth-pie {
+  text-align: center;
+  margin-top: 28px;
+  color: var(--fd-niebla);
+
+  a {
+    color: var(--ion-color-primary);
+    font-weight: 700;
+    text-decoration: none;
+  }
 }

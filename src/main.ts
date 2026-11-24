@@ -1,5 +1,5 @@
 import { registerLocaleData } from '@angular/common';
-import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { provideHttpClient } from '@angular/common/http';
 import localeEs from '@angular/common/locales/es';
 import { LOCALE_ID, provideZoneChangeDetection } from '@angular/core';
 import { bootstrapApplication } from '@angular/platform-browser';
@@ -14,7 +14,6 @@ import { IonicRouteStrategy, provideIonicAngular } from '@ionic/angular';
 
 import { AppComponent } from './app/app.component';
 import { routes } from './app/app.routes';
-import { apiFalsaInterceptor } from './app/core/interceptors/api-falsa.interceptor';
 
 // Fechas y numeros en español (pipes date, number, etc.)
 registerLocaleData(localeEs, 'es');
@@ -28,7 +27,7 @@ bootstrapApplication(AppComponent, {
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     provideIonicAngular({ mode: 'md' }),
     provideRouter(routes, withPreloading(PreloadAllModules), withComponentInputBinding()),
-    // HttpClient con nuestro interceptor de la API falsa
-    provideHttpClient(withInterceptors([apiFalsaInterceptor])),
+    // HttpClient para las APIs reales (aeropuertos y clima)
+    provideHttpClient(),
   ],
 });

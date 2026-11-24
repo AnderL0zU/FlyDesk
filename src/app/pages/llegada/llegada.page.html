@@ -1,0 +1,54 @@
+<ion-content [fullscreen]="true" class="contenido-llegada">
+  <div class="pantalla" *ngIf="ultimoVuelo">
+    <div class="centro">
+      <!-- Avion aterrizando -->
+      <div class="pista">
+        <ion-icon name="airplane" class="avion-aterrizaje" aria-hidden="true"></ion-icon>
+      </div>
+
+      <h1 class="titulo">¡Felicidades!</h1>
+      <p class="texto">
+        Aterrizaste en {{ ultimoVuelo.vuelo.destino.ciudad }}.<br />
+        Completaste {{ formatearDuracion(ultimoVuelo.vuelo.duracionMin) }} de enfoque.
+      </p>
+
+      <!-- Clima actual en el destino -->
+      <ion-chip class="clima" *ngIf="cargandoClima" [outline]="true">
+        <ion-spinner name="dots"></ion-spinner>
+      </ion-chip>
+      <ion-chip class="clima" *ngIf="clima" [outline]="true">
+        <ion-icon [name]="clima.icono" aria-hidden="true"></ion-icon>
+        <ion-label>
+          {{ clima.temperatura }}° · {{ clima.descripcion }} en {{ ultimoVuelo.vuelo.destino.ciudad }}
+        </ion-label>
+      </ion-chip>
+
+      <!-- Resumen del vuelo -->
+      <ion-card class="resumen">
+        <ion-card-content class="ion-no-padding">
+          <ion-list lines="none" class="lista-resumen">
+            <ion-item>
+              <ion-icon slot="start" name="map-outline" aria-hidden="true"></ion-icon>
+              <ion-label>Ruta</ion-label>
+              <ion-note slot="end">{{ ultimoVuelo.vuelo.origen.iata }} → {{ ultimoVuelo.vuelo.destino.iata }}</ion-note>
+            </ion-item>
+            <ion-item>
+              <ion-icon slot="start" name="time-outline" aria-hidden="true"></ion-icon>
+              <ion-label>Tiempo de vuelo</ion-label>
+              <ion-note slot="end">{{ formatearDuracion(ultimoVuelo.vuelo.duracionMin) }}</ion-note>
+            </ion-item>
+            <ion-item>
+              <ion-icon slot="start" name="ticket-outline" aria-hidden="true"></ion-icon>
+              <ion-label>Vuelo</ion-label>
+              <ion-note slot="end">{{ ultimoVuelo.codigo }}</ion-note>
+            </ion-item>
+          </ion-list>
+        </ion-card-content>
+      </ion-card>
+    </div>
+
+    <div class="pie">
+      <ion-button expand="block" class="auth-boton" (click)="irAlInicio()">Volver al inicio</ion-button>
+    </div>
+  </div>
+</ion-content>
